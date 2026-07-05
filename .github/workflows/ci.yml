@@ -8,12 +8,38 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]   # macOS exercises the bash-3.2 + no-GNU-timeout watchdog path for real
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install tools
+      - name: Install tools (Linux)
+        if: runner.os == 'Linux'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck jq
+        # macOS runners ship bash/jq/python3; make check skips shellcheck gracefully there
 
       - name: make check
         run: make check
+
+      - name: make smoke-install
+        run: make smoke-install
+
+  plugin-validate:
+    # Validates both manifests against the official schema. Kept as its own
+    # job: if installing the claude CLI in CI ever proves flaky, demote this
+    # job rather than blocking the main checks (CONTRIBUTING documents
+    # `make validate` as the mandatory local gate either way).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Validate marketplace and plugin manifests
+        run: |
+          claude plugin validate . --strict
+          claude plugin validate ./plugin --strict

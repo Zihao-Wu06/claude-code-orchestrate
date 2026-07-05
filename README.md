@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml/badge.svg)](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml)
 [![license: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](LICENSE)
-[![plugin](https://img.shields.io/badge/claude%20code-plugin-blue.svg)](.claude-plugin/plugin.json)
+[![plugin](https://img.shields.io/badge/claude%20code-plugin-blue.svg)](plugin/.claude-plugin/plugin.json)
 
 The session's main model (intended: Fable 5) leads as **orchestrator** — planning,
 decomposing, delegating, synthesizing — while the actual work routes to cheaper,
@@ -127,6 +127,8 @@ scripts/ + Makefile      installer + maintenance tooling — `make check` is the
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the pieces fit; the
   seven load-bearing design decisions, each linked to its SKILL.md section
+- [docs/USAGE.md](docs/USAGE.md) — worked /orchestrate examples, which
+  modifier when, and what "wrong-looking" outputs actually mean
 - [tests/README.md](tests/README.md) — the three test layers and how to run
   them; [tests/RUNBOOK.md](tests/RUNBOOK.md) — rerun procedures and the iron
   law (no skill edit ships without a scenario rerun)
