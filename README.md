@@ -51,8 +51,11 @@ its unreachable-auto-off behavior are covered in
 - `economic` — thrift mode: skips the cross-vendor double-check (always
   announced) and leans on the cheaper executors.
 - `thorough` — rigor mode: leans on Opus and adds adversarial verification.
-- `custom` — pick which installed agent roles to use this run
-  (write your own with `plugin/skills/orchestrate/agent-TEMPLATE.md`).
+- `custom` — pick which installed agent **roles** *and* which installed
+  **skills** to use this run. Roles slot into a tier; a selected skill is
+  injected into the matching dispatch as its operating procedure (announced,
+  never broadcast). Author a role with
+  `plugin/skills/orchestrate/agent-TEMPLATE.md`.
 - No modifier — the standard routing table. Exact semantics live in one place:
   SKILL.md's **Budget modes** and **Custom roster** sections.
 
