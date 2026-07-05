@@ -41,12 +41,12 @@ chmod +x ~/.claude/skills/orchestrate/peer.sh
 codex login status          # must say "Logged in" — otherwise: codex login
 ```
 
-The peer is **optional, with a hard switch**: `peer.sh --off` disables it persistently (`--on` re-enables, `--status` reports; while off, peer calls refuse with exit 3 — the marker lives at `~/.claude/orchestrate.peer-off`, outside the skill dir, so it survives updates). If the peer is switched off, or the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), and a row-3 hit falls back to its cheap-mode form (deep-reasoner solo + independent review + human-sign-off note). Everything else works.
+The peer is **optional, with a hard switch**: `peer.sh --off` disables it persistently (`--on` re-enables, `--status` reports; while off, peer calls refuse with exit 3 — the marker lives at `~/.claude/orchestrate.peer-off`, outside the skill dir, so it survives updates). If the peer is switched off, or the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), and a row-3 hit falls back to its economic-mode form (deep-reasoner solo + independent review + human-sign-off note). Everything else works.
 
 ## Invocation modifiers
 
 The invocation may start with modifiers, in any order, before the task:
-- `cheap` | `thorough` — budget mode (see **Budget modes**). Neither = default mode.
+- `economic` | `thorough` — budget mode (see **Budget modes**). Neither = default mode.
 - `custom` — select a custom roster before planning (see **Custom roster**).
 
 ## Run (the orchestration loop)
@@ -173,11 +173,11 @@ Launch **both** executors on the **same** problem, **in one message, blind to ea
 
 Modes adjust **routing tendency** and **verification intensity**. They never silently lower quality: every skipped cross-check is announced in the plan and in the conclusion.
 
-| Lever | `cheap` | default | `thorough` |
+| Lever | `economic` | default | `thorough` |
 |---|---|---|---|
-| Row-3 parallel cross-check | **Disabled.** On a dual-condition hit: deep-reasoner solo + independent Sonnet review, and announce *"cheap mode skipped the cross-vendor check — human sign-off recommended"* | Fires on the dual condition | Fires on the dual condition; reconcile rounds 1 → 2 before escalating |
+| Row-3 parallel cross-check | **Disabled.** On a dual-condition hit: deep-reasoner solo + independent Sonnet review, and announce *"economic mode skipped the cross-vendor check — human sign-off recommended"* | Fires on the dual condition | Fires on the dual condition; reconcile rounds 1 → 2 before escalating |
 | Borderline task (reasoning vs mechanical unclear) | **Route down:** fast-worker first, with the acceptance check; ladder up on failure | Judgment call per the table | **Route up:** deep-reasoner directly |
-| Codex signals | Only "you are looping"; on other signals announce *"cross-check available, skipped (cheap)"* | All seven | All seven, plus an adversarial falsify pass on high-stakes conclusions |
+| Codex signals | Only "you are looping"; on other signals announce *"cross-check available, skipped (economic)"* | All seven | All seven, plus an adversarial falsify pass on high-stakes conclusions |
 | Verification stage | **Never cut**; reviewer pinned to Sonnet | Cheap check → run it; else reviewer | Implement-type always gets a reviewer (tests AND reviewer) |
 | Thinking depth | Claude executors unchanged; peer calls use `--effort medium` | Full; peer at its default (xhigh) | Full; peer at xhigh |
 | scout / trivial-solo rows | unchanged | unchanged | unchanged |

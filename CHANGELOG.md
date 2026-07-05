@@ -20,7 +20,7 @@ All notable changes to this project are documented here. The format follows
 - The Codex peer is now explicitly optional: `peer.sh --off | --on | --status`
   persistent switch (marker outside the skill dir, survives updates; disabled
   runs refuse with exit 3). While off, the skill announces the skip and the
-  high-stakes path falls back to its cheap-mode single-executor form.
+  high-stakes path falls back to its economic-mode single-executor form.
 - CI now smoke-tests the manual install path on Linux **and macOS**
   (`make smoke-install`: placement, idempotence, stale-agent cleanup — the
   macOS job is the first CI coverage of peer.sh's bash-3.2/watchdog branch),
@@ -36,6 +36,8 @@ All notable changes to this project are documented here. The format follows
   review: adopted P0/P1b fully, P1a/P2a/P2b partially, deferred P1c.)
 
 ### Changed
+- The `cheap` budget mode is renamed to `economic` (same semantics; the
+  0.1.0 entry below keeps the original name as a historical record).
 - The shippable plugin now lives entirely under `plugin/` (agents, commands,
   skills, plugin manifest); the root
   marketplace manifest points at `./plugin`. `install.sh` moved to

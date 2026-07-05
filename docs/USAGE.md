@@ -16,7 +16,7 @@ reference. There are four surfaces:
 ## 1. The `/orchestrate` command
 
 ```
-/orchestrate [cheap|thorough] [custom] <task…>
+/orchestrate [economic|thorough] [custom] <task…>
 ```
 
 Describe the task like a brief to a tech lead — goal, context, constraints. The
@@ -47,18 +47,18 @@ and Codex **blind, in parallel**, then the orchestrator reconciles.
 ### Modifiers and their effects
 
 Modifiers go before the task, in any order, and combine
-(`/orchestrate cheap custom …`).
+(`/orchestrate economic custom …`).
 
 | Modifier | Effect |
 |---|---|
 | *(none)* | Standard routing. The two-model parallel cross-check fires only when a decision is both high-blast-radius and unverifiable. Verification runs the cheap check if one exists, else a blind reviewer. |
-| `cheap` | Lowest expensive-model spend, at some retry risk. Borderline work tries Sonnet first (ladders up on failure); the parallel cross-check is **disabled** (deep-reasoner alone + a Sonnet review, with *"human sign-off recommended"* announced); Codex fires only when the orchestrator is looping (other signals are announced and skipped); the peer runs at `--effort medium`. **Verification is never cut.** Every skip is announced in the plan and the conclusion. |
+| `economic` | Lowest expensive-model spend, at some retry risk. Borderline work tries Sonnet first (ladders up on failure); the parallel cross-check is **disabled** (deep-reasoner alone + a Sonnet review, with *"human sign-off recommended"* announced); Codex fires only when the orchestrator is looping (other signals are announced and skipped); the peer runs at `--effort medium`. **Verification is never cut.** Every skip is announced in the plan and the conclusion. |
 | `thorough` | Maximum rigor. Borderline work goes straight to Opus; the parallel path allows two reconcile rounds before escalating; high-stakes conclusions get an adversarial *falsify* pass; implement-type work always gets a reviewer (tests **and** a reviewer). |
 | `custom` | Before planning, you're asked (multi-select) which installed agent roles to use this run. Each selected role slots into a tier — recon / mechanical / reasoning / peer — by its description and inherits that tier's rules; the routing table itself is unchanged. Author your own role with `plugin/skills/orchestrate/agent-TEMPLATE.md`. |
 
 **Budget modes never reduce how hard any executor thinks** — they change *who*
 gets the work and how much verification runs, never the assignee's reasoning
-depth. The only depth knob is the peer's `--effort`, which `cheap` lowers.
+depth. The only depth knob is the peer's `--effort`, which `economic` lowers.
 
 ### Worked examples
 
@@ -89,7 +89,7 @@ get build+test results, not "done" claims.
 **Quick sweep, thrift mode:**
 
 ```
-/orchestrate cheap Rename `getUserByID` to `fetchUser` across the repo and
+/orchestrate economic Rename `getUserByID` to `fetchUser` across the repo and
 fix all call sites. Tests must stay green.
 ```
 
@@ -120,7 +120,7 @@ Expected: you're asked which installed roles to use (e.g. swap in your own
   the crux facts and what would settle each, and the questions for you — with
   **no recommendation**. That is the designed outcome, not a failure: the facts
   that break the tie (roadmap, compliance, budget) are yours, not the models'.
-- **Announcements.** In `cheap` mode, every skipped cross-check is stated in the
+- **Announcements.** In `economic` mode, every skipped cross-check is stated in the
   plan and again in the conclusion, so a thinned-out high-stakes answer never
   passes silently.
 
@@ -143,7 +143,7 @@ peer.sh --on         # re-enable
 ```
 
 While off, every peer call refuses with **exit code 3**, the skill announces the
-degradation, and a high-stakes decision falls back to its `cheap`-mode form
+degradation, and a high-stakes decision falls back to its `economic`-mode form
 (deep-reasoner alone + independent review + a human-sign-off note). The marker
 lives at `$CLAUDE_DIR/orchestrate.peer-off` (default `~/.claude/…`), deliberately
 outside the plugin dir so an update or reinstall can't silently re-enable it.

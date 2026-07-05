@@ -47,11 +47,11 @@ skipped).
 ## Use
 
 ```
-/orchestrate [cheap|thorough] [custom] <task…>
+/orchestrate [economic|thorough] [custom] <task…>
 ```
 
-- `cheap` — thrift mode: skips the cross-vendor double-check (always announced)
-  and leans on the cheaper executors.
+- `economic` — thrift mode: skips the cross-vendor double-check (always
+  announced) and leans on the cheaper executors.
 - `thorough` — rigor mode: leans on Opus and adds adversarial verification.
 - `custom` — pick which installed agent roles to use this run
   (write your own with `plugin/skills/orchestrate/agent-TEMPLATE.md`).
@@ -87,7 +87,7 @@ On top of that:
 6. **Tech-lead command** — `/orchestrate` bakes in the goal/context/plan-first
    briefing pattern; main model and effort are the user's session choice, never
    dictated by the skill.
-7. **Budget modes** — `cheap` / default / `thorough` adjust routing tendency
+7. **Budget modes** — `economic` / default / `thorough` adjust routing tendency
    and verification intensity, never silently (all skips announced) and never
    by reducing any executor's thinking depth.
 8. **Escalation ladder** — fast-worker ×2 fail → deep-reasoner → (2 circling
@@ -153,10 +153,10 @@ specific location in the skill (indexed in [ARCHITECTURE.md](docs/ARCHITECTURE.m
   error confidently. Decisions that are both high-blast-radius *and* unverifiable
   run two models **blind and in parallel**, then reconcile. *Prevents* correlated
   single-model failure on the decisions most expensive to get wrong.
-- **P5 — Budget modes change *who*, not *how hard*.** `cheap`/`thorough` shift
+- **P5 — Budget modes change *who*, not *how hard*.** `economic`/`thorough` shift
   routing tendency and verification intensity; they never reduce any executor's
   thinking depth, and every skipped cross-check is announced. *Prevents* a
-  "cheap" mode that silently degrades answers.
+  thrift mode that silently degrades answers.
 - **P6 — Contracts over verdicts.** Every delegation carries an explicit
   contract (goal, inputs, constraints, interface, acceptance check, return
   format) and must return a *checkable artifact* — a test that runs, a diff that

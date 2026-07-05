@@ -13,7 +13,7 @@ tests, vendor snapshot, scripts — is engineering around it.
 
 ```
                        user
-                        │  /orchestrate [cheap|thorough] [custom] <task>
+                        │  /orchestrate [economic|thorough] [custom] <task>
                         ▼
           commands/orchestrate.md          (entry point: modifiers + tech-lead brief)
                         │ loads
@@ -74,7 +74,7 @@ Each links to the section in SKILL.md that states the actual rule:
 2. **Cost & context policy** — the orchestrator's context is the scarcest
    resource; reads >~100 lines go to scout; returns are capped at 20 lines
    except data-handoff recon. (§ Cost & context policy)
-3. **Budget modes never lower thinking depth** — `cheap`/`thorough` change
+3. **Budget modes never lower thinking depth** — `economic`/`thorough` change
    *who* gets the task and how much verification runs, never how hard the
    assignee thinks; every skipped cross-check is announced. (§ Budget modes)
 4. **Status vocabulary drives the escalation ladder** — `NEEDS_CONTEXT` is

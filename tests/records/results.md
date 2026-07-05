@@ -175,6 +175,22 @@ Troubleshooting gains the exit-3 entry. Routing rules unchanged.
 
 **Outcome: 3/3 PASS — the optionality wiring causes no behavioral drift.**
 
+## Round 11 — `cheap` mode renamed to `economic`, 2026-07-05
+
+Edit under test: the budget-mode token `cheap` renamed to `economic`
+globally (modifier list, Budget modes table header, the two announcement
+strings, the peer-off fallback wording); plain-English uses of "cheap"
+("cheaply verifiable", "cheap check", "the cheap way to save") deliberately
+untouched. Semantics unchanged.
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo, Read→Edit, uniqueness-safe old_string reasoning) |
+| B — conflict | **PASS** (four-part brief, no fifth part; cites post-rename mode semantics correctly — "thorough mode allows two [reconcile rounds]") |
+| C — recon (fallback) | **PASS** (scout-first, data-handoff exception, row-3 gated on the coupling evidence recon will surface) |
+
+**Outcome: 3/3 PASS — the rename is behavior-neutral.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness
