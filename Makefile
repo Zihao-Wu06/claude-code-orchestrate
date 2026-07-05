@@ -4,11 +4,12 @@
 SHELL := /bin/bash
 SCRIPTS := plugin/skills/orchestrate/peer.sh $(wildcard scripts/*.sh)
 
-.PHONY: help check install validate bump-version eval-view
+.PHONY: help check smoke-install install validate bump-version eval-view
 
 help:
 	@echo "Targets:"
-	@echo "  check         bash -n + shellcheck + manifest JSON + CI YAML + file integrity"
+	@echo "  check         syntax + shellcheck + manifests + YAML + integrity + links + peer mock"
+	@echo "  smoke-install install into a throwaway CLAUDE_DIR: placement, idempotence, stale cleanup"
 	@echo "  install       manual install into ~/.claude (see README for the plugin flow)"
 	@echo "  validate      claude plugin validate --strict (marketplace + plugin)"
 	@echo "  bump-version  V=x.y.z  update version in both plugin manifests atomically"
@@ -47,7 +48,35 @@ check:
 	@for ref in dispatch-prompt.md patterns.md; do \
 	  grep -q "$$ref" plugin/skills/orchestrate/SKILL.md || { echo "SKILL.md no longer references $$ref"; exit 1; }; \
 	done
+	@echo "== markdown relative links =="
+	@python3 scripts/check-links.py
+	@echo "== peer.sh mock smoke =="
+	@bash tests/shell/test-peer.sh
 	@echo "== all checks passed =="
+
+smoke-install:
+	@T=$$(mktemp -d); \
+	 echo "== install smoke: placement =="; \
+	 CLAUDE_DIR="$$T" ./scripts/install.sh > /dev/null; \
+	 for f in skills/orchestrate/SKILL.md skills/orchestrate/dispatch-prompt.md \
+	          skills/orchestrate/patterns.md skills/orchestrate/peer.sh \
+	          skills/orchestrate/agent-TEMPLATE.md skills/orchestrate/.installed-agents \
+	          agents/deep-reasoner.md agents/fast-worker.md agents/scout.md \
+	          commands/orchestrate.md; do \
+	   test -e "$$T/$$f" || { echo "smoke FAIL: missing $$f"; exit 1; }; \
+	 done; \
+	 test -x "$$T/skills/orchestrate/peer.sh" || { echo "smoke FAIL: peer.sh not executable"; exit 1; }; \
+	 echo "placement OK"; \
+	 echo "== install smoke: idempotence =="; \
+	 CLAUDE_DIR="$$T" ./scripts/install.sh > /dev/null && echo "second run OK"; \
+	 echo "== install smoke: stale-agent cleanup =="; \
+	 touch "$$T/agents/old-role.md" "$$T/agents/user-own-agent.md"; \
+	 echo "old-role" >> "$$T/skills/orchestrate/.installed-agents"; \
+	 CLAUDE_DIR="$$T" ./scripts/install.sh > /dev/null; \
+	 test ! -f "$$T/agents/old-role.md" || { echo "smoke FAIL: stale agent not removed"; exit 1; }; \
+	 test -f "$$T/agents/user-own-agent.md" || { echo "smoke FAIL: touched a user agent outside the manifest"; exit 1; }; \
+	 echo "stale cleanup OK (user files untouched)"; \
+	 rm -rf "$$T"
 
 install:
 	./scripts/install.sh
