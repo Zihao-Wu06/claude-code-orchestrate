@@ -36,6 +36,12 @@ All notable changes to this project are documented here. The format follows
   review: adopted P0/P1b fully, P1a/P2a/P2b partially, deferred P1c.)
 
 ### Changed
+- README gains a dedicated **The Codex peer** section documenting the on/off
+  switch (`--status` / `--off` / `--on`, persistent marker outside the skill
+  dir) and the unreachable-auto-off degrade path — distinguishing the
+  deliberate, persistent switch (exit 3, needs `--on` to recover) from the
+  automatic, *transient* skip when the Codex CLI is absent (self-heals once
+  Codex is reachable again).
 - The `cheap` budget mode is renamed to `economic` (same semantics; the
   0.1.0 entry below keeps the original name as a historical record).
 - The shippable plugin now lives entirely under `plugin/` (agents, commands,

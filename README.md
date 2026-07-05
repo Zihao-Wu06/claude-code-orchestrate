@@ -38,11 +38,9 @@ make install          # scripts/install.sh — copies into ~/.claude/{skills,age
 
 Named subagents (`deep-reasoner`, `fast-worker`, `scout`) resolve after a
 session reload; until then `Agent(subagent_type: "general-purpose", model: …)`
-gives identical pinning. The Codex peer is **optional**: it needs the
-[Codex CLI](https://github.com/openai/codex) installed and `codex login` done,
-and can be switched off entirely with `peer.sh --off` (`--on` re-enables) —
-when absent or off, the Codex routing rows degrade gracefully (announced,
-skipped).
+gives identical pinning. The Codex peer is **optional** — its on/off switch and
+its unreachable-auto-off behavior are covered in
+[The Codex peer](#the-codex-peer-optional) below.
 
 ## Use
 
@@ -64,6 +62,36 @@ and ask it to show the plan first.
 Full operator's reference — every modifier's effect, what the output looks
 like, the `peer.sh` on/off switch and flags, and the `make` targets — is in
 [docs/USAGE.md](docs/USAGE.md).
+
+## The Codex peer (optional)
+
+The cross-vendor peer runs through the
+[Codex CLI](https://github.com/openai/codex) — install it and run `codex login`
+to enable it. It is entirely optional and has a hard, persistent switch:
+
+```bash
+peer.sh --status   # is the peer enabled? is the Codex CLI reachable?
+peer.sh --off      # turn it off — persists across sessions and plugin updates
+peer.sh --on       # turn it back on
+```
+
+`peer.sh` lives at `~/.claude/skills/orchestrate/peer.sh` after a manual
+install, or beside `SKILL.md` in the plugin directory.
+
+**Off by choice.** While off, every peer call refuses with **exit code 3**, the
+skill announces the skip once, and any high-stakes decision falls back to its
+economic-mode form (deep-reasoner alone + an independent review + a
+human-sign-off note). The marker lives at `~/.claude/orchestrate.peer-off`,
+deliberately *outside* the skill directory, so a plugin update or reinstall
+can't silently switch it back on.
+
+**Unreachable → auto-off.** If the Codex CLI was never installed, isn't on
+`PATH`, or `codex login` has lapsed, the skill turns the peer off
+*automatically* — the same graceful skip, announcement, and high-stakes
+fallback, with no command to run. Unlike `--off`, this is automatic and
+*transient*: nothing is persisted, so the peer resumes the instant Codex is
+reachable again. `peer.sh --status` reports both signals — whether the switch
+is on and whether the Codex CLI is on `PATH`.
 
 ## Features
 
