@@ -1,5 +1,9 @@
 # orchestrate — a multi-model orchestration skill for Claude Code
 
+[![ci](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml/badge.svg)](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml)
+[![license: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](LICENSE)
+[![plugin](https://img.shields.io/badge/claude%20code-plugin-blue.svg)](.claude-plugin/plugin.json)
+
 The session's main model (intended: Fable 5) leads as **orchestrator** — planning,
 decomposing, delegating, synthesizing — while the actual work routes to cheaper,
 model-pinned executors:
@@ -104,20 +108,31 @@ Added on top:
     (recon/mechanical/reasoning/peer) and inherit its rules; the routing
     table itself never changes. `agents/TEMPLATE.md` is the authoring guide.
 
-## Repo layout
+## Layout
 
 ```
 .claude-plugin/          plugin + marketplace manifests (repo is its own marketplace)
 skills/orchestrate/      the skill: SKILL.md, dispatch-prompt.md, peer.sh, agents/TEMPLATE.md
 agents/                  the three model-pinned agent definitions (plugin-standard location)
 commands/orchestrate.md  the /orchestrate slash command
-tests/                   RUNBOOK, scenarios, field runs, eval suite + benchmark
-vendor/fable-orchestrate pristine upstream snapshot (do not edit)
+docs/                    architecture and design-decision index
+tests/                   fixtures, eval harness, and validation records (see tests/README.md)
+vendor/fable-orchestrate pristine upstream snapshot (see its PROVENANCE.md; do not edit)
+scripts/ + Makefile      maintenance tooling — `make check` is the repo health gate
 install.sh               manual user-wide installer (idempotent)
 ```
 
-## Testing the skill itself
+## Documentation
 
-See `tests/RUNBOOK.md`. Baseline (no skill) and with-skill runs of each
-scenario in `tests/scenarios/`; results in `tests/results.md`. The iron law:
-no skill edit ships without rerunning the scenarios.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the pieces fit; the
+  seven load-bearing design decisions, each linked to its SKILL.md section
+- [tests/README.md](tests/README.md) — the three test layers and how to run
+  them; [tests/RUNBOOK.md](tests/RUNBOOK.md) — rerun procedures and the iron
+  law (no skill edit ships without a scenario rerun)
+- [CONTRIBUTING.md](CONTRIBUTING.md) — setup, `make check`, style,
+  versioning; [CHANGELOG.md](CHANGELOG.md) — release history
+
+Validation highlights: six TDD rounds, a real end-to-end field run whose
+blind reviewer caught a defect the whole chain missed, and a quantified
+benchmark (with-skill 100% vs baseline 58.3% — caveats in
+[tests/evals/iteration-1/ANALYSIS.md](tests/evals/iteration-1/ANALYSIS.md)).
