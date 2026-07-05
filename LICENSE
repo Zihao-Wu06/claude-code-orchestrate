@@ -1,0 +1,23 @@
+Creative Commons Attribution-NonCommercial 4.0 International
+
+Copyright (c) 2026 Zihao Wu
+
+This work is an adaptation of the "fable-orchestrate" skill from
+open-science-skills by Steven Denney
+(https://github.com/scdenney/open-science-skills), used and modified under
+CC BY-NC 4.0. Substantial changes were made; see README.md for the full
+delta. The pristine upstream snapshot is preserved in vendor/fable-orchestrate/.
+
+This work is licensed under the Creative Commons Attribution-NonCommercial
+4.0 International Public License (CC BY-NC 4.0).
+
+You may share and adapt the material for noncommercial purposes, provided
+that you give appropriate credit (to both this work and the upstream work),
+indicate whether changes were made, and do not use the material for
+commercial purposes.
+
+Full license text:
+https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+Human-readable summary:
+https://creativecommons.org/licenses/by-nc/4.0/
