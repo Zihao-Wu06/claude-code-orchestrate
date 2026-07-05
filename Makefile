@@ -10,7 +10,7 @@ help:
 	@echo "Targets:"
 	@echo "  check         bash -n + shellcheck + manifest JSON + CI YAML + file integrity"
 	@echo "  install       manual install into ~/.claude (see README for the plugin flow)"
-	@echo "  validate      claude plugin validate . --strict"
+	@echo "  validate      claude plugin validate --strict (marketplace + plugin)"
 	@echo "  bump-version  V=x.y.z  update version in both plugin manifests atomically"
 	@echo "  eval-view     print the command to regenerate the eval review viewer"
 
@@ -33,17 +33,20 @@ check:
 	@python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml')); print('YAML OK')" 2>/dev/null \
 	  || ruby -ryaml -e "YAML.load_file('.github/workflows/ci.yml'); puts 'YAML OK'"
 	@echo "== file integrity =="
-	@test -f LICENSE && test -f CHANGELOG.md && test -f CONTRIBUTING.md
-	@test -f plugin/skills/orchestrate/SKILL.md
-	@test -f plugin/skills/orchestrate/dispatch-prompt.md
-	@test -f plugin/skills/orchestrate/patterns.md
-	@test -f plugin/skills/orchestrate/agent-TEMPLATE.md
-	@grep -q "patterns.md" plugin/skills/orchestrate/SKILL.md
-	@test -f plugin/commands/orchestrate.md
-	@for a in deep-reasoner fast-worker scout; do test -f "plugin/agents/$$a.md" || { echo "missing plugin/agents/$$a.md"; exit 1; }; done
-	@for s in A-trivial B-conflict C-recon; do test -f "tests/scenarios/$$s.md" || { echo "missing tests/scenarios/$$s.md"; exit 1; }; done
-	@test -f tests/RUNBOOK.md && test -f tests/records/results.md && test -f tests/README.md
-	@grep -q "dispatch-prompt.md" plugin/skills/orchestrate/SKILL.md
+	@for f in LICENSE CHANGELOG.md CONTRIBUTING.md \
+	          plugin/skills/orchestrate/SKILL.md \
+	          plugin/skills/orchestrate/dispatch-prompt.md \
+	          plugin/skills/orchestrate/patterns.md \
+	          plugin/skills/orchestrate/agent-TEMPLATE.md \
+	          plugin/commands/orchestrate.md \
+	          plugin/agents/deep-reasoner.md plugin/agents/fast-worker.md plugin/agents/scout.md \
+	          tests/scenarios/A-trivial.md tests/scenarios/B-conflict.md tests/scenarios/C-recon.md \
+	          tests/RUNBOOK.md tests/records/results.md tests/README.md; do \
+	  test -f "$$f" || { echo "missing $$f"; exit 1; }; \
+	done
+	@for ref in dispatch-prompt.md patterns.md; do \
+	  grep -q "$$ref" plugin/skills/orchestrate/SKILL.md || { echo "SKILL.md no longer references $$ref"; exit 1; }; \
+	done
 	@echo "== all checks passed =="
 
 install:
