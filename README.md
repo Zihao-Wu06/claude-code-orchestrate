@@ -108,7 +108,7 @@ Modifiers go before the task, in any order, and combine
 
 | Modifier | What it does | Example |
 |---|---|---|
-| *(none)* | Standard routing. The blind cross-check fires only when a decision is both high-blast-radius and unverifiable. | `/orchestrate Add a --json flag to the export command and cover it with tests.` |
+| *(no modifier)* | Standard routing — the default. The blind cross-check fires only when a decision is both high-blast-radius and unverifiable. | `/orchestrate Add a --json flag to the export command and cover it with tests.` |
 | `economic` | **Thrift mode** — routes borderline work down to Sonnet, disables the cross-vendor double-check (announced), runs the peer at `--effort medium`. Verification is never cut. | `/orchestrate economic Rename getUserByID to fetchUser across the repo; keep tests green.` |
 | `thorough` | **Rigor mode** — routes borderline work up to Opus, allows two reconcile rounds, adds an adversarial *falsify* pass, and always adds a reviewer to implement work. | `/orchestrate thorough Design the shared log schema before migrating 40 services.` |
 | `custom` | Pick which installed **roles** and **skills** to use this run (see [The custom roster](#the-custom-roster)). | `/orchestrate custom Audit the payment-v2 diff for security issues, then fix them.` |
