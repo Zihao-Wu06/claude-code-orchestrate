@@ -1,0 +1,110 @@
+# orchestrate — a multi-model orchestration skill for Claude Code
+
+The session's main model (intended: Fable 5) leads as **orchestrator** — planning,
+decomposing, delegating, synthesizing — while the actual work routes to cheaper,
+model-pinned executors:
+
+| Executor | Model | Does |
+|---|---|---|
+| deep-reasoner | Opus | architecture, complex debugging, algorithm design, hard trade-offs |
+| fast-worker | Sonnet | boilerplate, tests-from-spec, formatting, bulk edits |
+| scout | Haiku, read-only | locating code, mapping structure, summarizing state |
+| peer (Codex) | GPT-5, different vendor | fresh perspectives, disputed designs, parallel cross-checks |
+
+## Provenance & license
+
+Adapted from the `fable-orchestrate` skill in
+[scdenney/open-science-skills](https://github.com/scdenney/open-science-skills)
+by **Steven Denney** (CC BY-NC 4.0). Substantial changes made — see the feature
+delta below. This adaptation is likewise licensed
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): noncommercial
+use only, credit required. The pristine upstream snapshot is kept in
+`vendor/fable-orchestrate/` for diffing and future syncs.
+
+## Install
+
+```bash
+./install.sh          # copies into ~/.claude/{skills,agents,commands}
+```
+
+Named subagents (`deep-reasoner`, `fast-worker`, `scout`) resolve after a
+session reload; until then `Agent(subagent_type: "general-purpose", model: …)`
+gives identical pinning. The Codex peer additionally needs the
+[Codex CLI](https://github.com/openai/codex) installed and `codex login` done —
+without it the Codex routing rows degrade gracefully (announced, skipped).
+
+## Use
+
+```
+/orchestrate [cheap|thorough] [custom] <task…>
+```
+
+- `cheap` — never runs the two-model parallel cross-check (announces the skip),
+  routes borderline work down to Sonnet first, calls the peer at `--effort medium`.
+- `thorough` — routes borderline work up to Opus, adds an adversarial falsify
+  pass on high-stakes conclusions, doubles the reconcile budget.
+- `custom` — asks which installed agent roles to use for this run
+  (write your own with `skills/orchestrate/agents/TEMPLATE.md`).
+- No modifier — the standard routing table.
+
+Or just describe the job like a tech-lead brief: goal, context, constraints —
+and ask it to show the plan first.
+
+## What was changed vs upstream (feature delta)
+
+Everything upstream is kept: the first-match routing table, the seven
+Opus/Sonnet mixing patterns, the Codex use/don't-use signals, the blind
+parallel path, the fragmentation/rubber-stamping guardrail, the gotchas.
+Added on top:
+
+1. **scout role** (new agent + routing row 4) — read-only recon on Haiku so the
+   orchestrator never burns its own context reading files to "understand first".
+2. **Cost & context policy** — explicit rules: >100-line reads go to scout;
+   delegation prompts self-contained; every return capped at conclusion +
+   evidence ≤ 20 lines with `path:line` anchors; slow work backgrounds.
+3. **Verification stage** — implement-type fan-ins get an independent check:
+   run the cheap check, else a fresh reviewer (blind to the implementation)
+   returns a defect list, never approve/reject.
+4. **Delegation contract template** — six copy-paste fields (Goal / Inputs /
+   Constraints / Interface / Acceptance check / Return format).
+5. **SDO-compliant description** — frontmatter states triggering conditions
+   only; upstream's summarized the workflow, which makes agents follow the
+   description and skip the body.
+6. **Tech-lead command** — `/orchestrate` bakes in the goal/context/plan-first
+   briefing pattern; main model and effort are the user's session choice, never
+   dictated by the skill.
+7. **Budget modes** — `cheap` / default / `thorough` adjust routing tendency
+   and verification intensity, never silently (all skips announced) and never
+   by reducing any executor's thinking depth.
+8. **Escalation ladder** — fast-worker ×2 fail → deep-reasoner → (2 circling
+   rounds) → Codex → human; never re-route a failed task down-tier.
+9. **Generalized peer interface** — `codex-peer.sh` refactored to
+   `peer.sh --backend codex` (one function per vendor backend; the verified
+   codex invocation pattern preserved verbatim) plus `--effort` mapped to
+   `model_reasoning_effort`.
+10. **Fan-out worktree isolation** — parallel workers that edit files get
+    `Agent(isolation: "worktree")`; non-overlapping scope on paper doesn't
+    prevent real file conflicts.
+11. **Regression test suite** — `tests/` holds standalone pressure scenarios,
+    a RUNBOOK, and recorded baseline/with-skill results (superpowers
+    writing-skills TDD); any SKILL.md edit requires a rerun.
+12. **Optional custom roster** — `custom` modifier asks (multiSelect) which
+    installed roles to use this run; selected roles slot into a tier
+    (recon/mechanical/reasoning/peer) and inherit its rules; the routing
+    table itself never changes. `agents/TEMPLATE.md` is the authoring guide.
+
+## Repo layout
+
+```
+skills/orchestrate/      the skill: SKILL.md, agents/, peer.sh
+commands/orchestrate.md  the /orchestrate slash command
+tests/                   RUNBOOK, scenarios, recorded results
+vendor/fable-orchestrate pristine upstream snapshot (do not edit)
+install.sh               user-wide installer (idempotent)
+```
+
+## Testing the skill itself
+
+See `tests/RUNBOOK.md`. Baseline (no skill) and with-skill runs of each
+scenario in `tests/scenarios/`; results in `tests/results.md`. The iron law:
+no skill edit ships without rerunning the scenarios.
