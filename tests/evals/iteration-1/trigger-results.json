@@ -1,0 +1,75 @@
+{
+  "skill_name": "orchestrate",
+  "description": "Use when work should be led as a multi-model orchestration \u2014 the user asks to orchestrate, delegate, fan out, or act as tech lead; wants a second opinion from a different vendor; or wants main-model usage conserved by routing work to cheaper model-pinned executors.",
+  "results": [
+    {
+      "query": "orchestrate this one: fix the flaky retry test in ci, then extract the retry/backoff logic into its own lib with tests. use your worker agents where it makes sense, keep the expensive model usage low",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
+    },
+    {
+      "query": "I've got a gnarly migration: ~40 services need their logging swapped over to structlog, and we need to redesign the log schema first. Act as tech lead \u2014 plan it, split the design work vs the grunt work across your subagents, and get a second opinion from codex on the schema before anything moves.",
+      "should_trigger": true,
+      "trigger_rate": 1.0,
+      "triggers": 1,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "I want a cross-vendor sanity check on our proposed sharding key for the events table: have opus and codex look at it independently, blind to each other, then reconcile their takes for me",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
+    },
+    {
+      "query": "what's actually the difference between opus and sonnet for coding work? and which one is cheaper per token these days",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "can you run our test suite in parallel with pytest-xdist and tell me which tests are the slow ones? output as a table",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "fix the typo in README.md line 3: 'teh' should be 'the'. that's it",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "write me an agent definition file for a code-review subagent I can drop into ~/.claude/agents \u2014 sonnet-pinned, reviews diffs for security issues",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": true
+    },
+    {
+      "query": "this refactor is huge (auth + billing + notifications, like 8k lines total). don't burn your own context reading everything \u2014 delegate the recon and farm the mechanical edits out to cheaper models. show me the plan first",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 1,
+      "pass": false
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 5,
+    "failed": 3
+  }
+}

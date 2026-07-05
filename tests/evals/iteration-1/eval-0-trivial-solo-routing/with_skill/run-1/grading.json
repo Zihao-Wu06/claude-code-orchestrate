@@ -1,0 +1,25 @@
+{
+  "expectations": [
+    {
+      "text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence",
+      "passed": true,
+      "evidence": "\"no Bash, no Grep/Glob, no Agent spawn, no peer.sh consult, no report file\" \u2014 plan is exactly two tool calls run directly."
+    },
+    {
+      "text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)",
+      "passed": true,
+      "evidence": "Steps: Read(README.md) then Edit(old_string: \"teh quick brown fox\", new_string: \"the quick brown fox\"). \"That's it.\""
+    },
+    {
+      "text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix",
+      "passed": true,
+      "evidence": "\"No verification-stage reviewer is warranted either: this is my own trivial edit, not a delegated result\u2026 the Verification stage governs fan-in from delegated work, not solo edits.\""
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

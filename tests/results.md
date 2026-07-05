@@ -83,3 +83,29 @@ in all agent defs, TEMPLATE, and dispatch-prompt.md's status section.
 reproduce; live-executor compliance is verified separately in field runs
 (field-run-1.md notes residual risk: dispatch-level repetition helps but is
 not airtight — the orchestrator tolerates late-status parsing as fallback).
+
+## Round 5 — description SDO update, 2026-07-05
+
+Edit under test: frontmatter description made pushier (broader trigger
+surface: worker/sub agents, split design from grunt work, run-two-models-and-
+reconcile, don't-burn-context phrasing) after trigger tests showed
+undertriggering in the probe environment. Body unchanged. Iron-law rerun:
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo, zero delegation) |
+| B — conflict | **PASS** (four-part brief, no fifth part, one-reconcile-round cap correctly applied) |
+| C — recon (fallback) | **PASS** (scout-first with verbatim preamble, data-handoff exception, test-coverage item added to gate the row-3 decision) |
+
+**Outcome: 3/3 PASS — description change causes no behavioral regression.**
+
+## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
+
+The scenarios were also ported to the skill-creator eval harness
+(tests/evals/): with_skill **100%** (11/11 assertions) vs without_skill
+**58.3%**, delta **+0.42**. Trigger tests: perfect precision (0 false
+positives across 12 negative samples), ~zero recall in the `claude -p`
+probe environment (see evals/iteration-1/ANALYSIS.md for the honest
+interpretation — including the same-day real-environment auto-trigger that
+contaminated, and thereby validated, the baseline arm). Full artifacts:
+benchmark.md, ANALYSIS.md, review.html under tests/evals/iteration-1/.

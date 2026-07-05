@@ -6,6 +6,43 @@ Regression tests for `skills/orchestrate/SKILL.md`, following the superpowers
 rerunning all three scenarios** — the iron law applies to edits, not just
 creation.
 
+## Preferred: the eval suite (quantified, one command per stage)
+
+`evals/` holds the structured version of these scenarios (assertions in
+`evals/evals.json`, per-case metadata under `evals/iteration-N/eval-*/`),
+built with the official skill-creator harness. To rerun after a skill edit:
+
+1. Spawn the six runs (3 evals × with_skill/without_skill) as one-shot
+   `general-purpose` sonnet subagents — prompts are the scenario PROMPT
+   sections; the with-skill arm prepends the "Read SKILL.md +
+   dispatch-prompt.md first" preamble; each run writes `answer.md` into
+   `evals/iteration-N/eval-<id>-<name>/<config>/run-1/outputs/` and its
+   notification's tokens/duration go into `timing.json` beside it.
+   **Baseline caveat (learned the hard way):** if the skill is installed in
+   `~/.claude/skills/`, park it elsewhere for the baseline runs — installed
+   skills auto-trigger and contaminate the without_skill arm.
+2. Grade each run against the assertions → `grading.json` with
+   `expectations: [{text, passed, evidence}]` **and a `summary`
+   {total, passed, failed, pass_rate}** (the aggregator reads summary).
+3. Aggregate + render (from the skill-creator directory):
+   ```bash
+   python3 -m scripts.aggregate_benchmark <repo>/tests/evals/iteration-N --skill-name orchestrate
+   python3 eval-viewer/generate_review.py <repo>/tests/evals/iteration-N \
+     --skill-name orchestrate --benchmark .../benchmark.json --static .../review.html
+   ```
+4. Trigger tests: `python3 -m scripts.run_eval --eval-set tests/evals/trigger-eval.json
+   --skill-path skills/orchestrate --runs-per-query 3 …` — use ≥3 reps
+   (1-rep trigger results are noise; proven in iteration-1) and read
+   `evals/iteration-1/ANALYSIS.md` for how to interpret probe-environment
+   recall vs real-environment triggering.
+
+Iteration-1 results: with_skill 100% vs baseline 58.3% (delta +0.42);
+full numbers in `evals/iteration-1/benchmark.md`, caveats in
+`evals/iteration-1/ANALYSIS.md`, browsable run-by-run in
+`evals/iteration-1/review.html`.
+
+## Fallback: the manual three-scenario procedure (original method)
+
 ## How to run
 
 Each scenario file in `scenarios/` contains a `## PROMPT` section. Run each

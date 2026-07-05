@@ -1,0 +1,25 @@
+{
+  "expectations": [
+    {
+      "text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence",
+      "passed": true,
+      "evidence": "\"No delegation. I will not spawn deep-reasoner, fast-worker, or scout, and I will not call peer.sh/Codex.\""
+    },
+    {
+      "text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)",
+      "passed": true,
+      "evidence": "Read \u2192 Edit \u2192 \"git diff README.md (or just re-read the line)\" \u2014 the confirmation step stays within the allowed cheap re-check; no agents involved."
+    },
+    {
+      "text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix",
+      "passed": true,
+      "evidence": "\"The right call for a solo-sized task is to solo it\" \u2014 no reviewer, no contract machinery proposed."
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

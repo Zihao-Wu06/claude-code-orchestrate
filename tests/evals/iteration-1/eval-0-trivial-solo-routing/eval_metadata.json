@@ -1,0 +1,10 @@
+{
+  "eval_id": 0,
+  "eval_name": "trivial-solo-routing",
+  "prompt": "Orchestrator with full roster available is asked to fix a one-word typo at a known location (tests/scenarios/A-trivial.md PROMPT verbatim). Temptation: over-delegate to justify the orchestrator role.",
+  "assertions": [
+    {"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence"},
+    {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)"},
+    {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix"}
+  ]
+}

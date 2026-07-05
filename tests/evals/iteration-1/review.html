@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "orchestrate", "runs": [{"id": "eval-0-trivial-solo-routing-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "## Plan\n\nI will not delegate this. I'll do it myself with two tool calls, run directly (no subagent, no peer):\n\n1. **Read(README.md)** \u2014 read the file (or at least the region around line 3) to confirm the exact current text and surrounding context before editing. This satisfies the \"read before edit\" precondition and lets me verify the typo is really there as described (line 3, \"teh quick brown fox\") rather than trusting the user's line number blindly.\n\n2. **Edit(README.md, old_string: \"teh quick brown fox\", new_string: \"the quick brown fox\")** \u2014 a single exact string replacement. No `replace_all` needed since this is one occurrence on one line.\n\nThat's it \u2014 no Bash, no Grep/Glob, no Agent spawn, no peer.sh consult, no report file.\n\n## Why\n\nRunning the routing rule (first match wins, top to bottom) from SKILL.md:\n\n- **Row 1** (planning/synthesis/integration) doesn't apply \u2014 there's nothing to decompose.\n- **Row 2 fires immediately: \"trivial + single-step, where briefing a subagent costs more than just doing it.\"** This is a one-word, single-character-class fix (teh\u2192the) on a named file at a named line. Writing a proper dispatch contract for fast-worker \u2014 Goal / Inputs / Constraints / Interface / Acceptance check / Return format, per dispatch-prompt.md's mechanical template \u2014 would run to more tokens than the fix itself, plus the round-trip latency of spawning and waiting on the agent. The skill exists to keep expensive-model spend proportional to task complexity; routing a 1-line typo through any executor (even cheap Sonnet) inverts that ratio.\n\nNo later row ever gets consulted, because row 2 already matched:\n- Not row 3 (high-stakes): blast radius is negligible (a doc string), and it's trivially verifiable by rereading the line \u2014 neither condition holds, let alone both.\n- Not row 4 (recon): nothing to locate or map: the file and line are already given.\n- Not row 5 (mechanical-but-delegate-worthy): it's mechanical, but scale is the missing ingredient \u2014 fast-worker earns its keep on bulk/repetitive mechanical work, not a single substitution.\n- Not row 6 (reasoning-heavy): there is no design decision, ambiguity, or trade-off.\n- Not row 7 (Codex/decorrelated prior): no novel problem, no disagreement, no loop to break out of.\n\nI also don't spawn scout to \"confirm\" the typo first as a separate step \u2014 reading the file myself is a single cheap Read call, well under the \"~100 lines read \u2192 dispatch scout\" threshold in the Cost & context policy, so doing it inline is correct per that same policy rather than a violation of it.\n\nNo verification-stage reviewer is warranted either: this is my own trivial edit, not a delegated result, and the Verification stage in SKILL.md governs fan-in from delegated work, not solo edits I make directly. The \"cheaply verifiable\" check here is simply rereading the corrected line, which the Edit tool's diff view already shows.\n"}], "grading": {"expectations": [{"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence", "passed": true, "evidence": "\"no Bash, no Grep/Glob, no Agent spawn, no peer.sh consult, no report file\" \u2014 plan is exactly two tool calls run directly."}, {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)", "passed": true, "evidence": "Steps: Read(README.md) then Edit(old_string: \"teh quick brown fox\", new_string: \"the quick brown fox\"). \"That's it.\""}, {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix", "passed": true, "evidence": "\"No verification-stage reviewer is warranted either: this is my own trivial edit, not a delegated result\u2026 the Verification stage governs fan-in from delegated work, not solo edits.\""}], "summary": {"total": 3, "passed": 3, "failed": 0, "pass_rate": 1.0}}}, {"id": "eval-0-trivial-solo-routing-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "I'll work through this as the orchestrator would, then save the plan.\n\nThe plan:\n\n1. **Read** `/Users/zihaowu/skill/README.md` (just enough to confirm line 3 and the exact surrounding text) \u2014 a single targeted read, not a full-file dump if avoidable, though for a 3-line check reading the whole file is cheap and fine.\n2. **Edit** the file directly: `old_string: \"teh quick brown fox\"`, `new_string: \"the quick brown fox\"`.\n3. **Bash**: `git diff README.md` (or just re-read the line) to confirm the change landed correctly.\n4. Report back to the user in one sentence that it's done.\n\n**No delegation.** I will not spawn `deep-reasoner`, `fast-worker`, or `scout`, and I will not call `peer.sh`/Codex. Reasoning: orchestration has fixed overhead (subagent spin-up, context handoff, a synthesis step to fold results back in) that only pays off when the task has enough surface area \u2014 multiple files, ambiguity, or domain judgment \u2014 to amortize it. A single-word, single-line, unambiguous string replacement in a known file is below that threshold on every axis: scope (1 file), ambiguity (0 \u2014 the fix is fully specified), and risk (trivial to verify by rereading the line). Routing it through `scout` to \"locate\" a file whose path the user already gave me, or through `fast-worker` for a one-string `Edit` call I can make myself, would add latency and indirection without adding correctness or speed. The right call for a solo-sized task is to solo it.\n"}], "grading": {"expectations": [{"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence", "passed": true, "evidence": "\"No delegation. I will not spawn deep-reasoner, fast-worker, or scout, and I will not call peer.sh/Codex.\""}, {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)", "passed": true, "evidence": "Read \u2192 Edit \u2192 \"git diff README.md (or just re-read the line)\" \u2014 the confirmation step stays within the allowed cheap re-check; no agents involved."}, {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix", "passed": true, "evidence": "\"The right call for a solo-sized task is to solo it\" \u2014 no reviewer, no contract machinery proposed."}], "summary": {"total": 3, "passed": 3, "failed": 0, "pass_rate": 1.0}}}, {"id": "eval-1-conflict-escalation-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "## Next action\n\nI do not run a second reconcile round, and I do not pick a winner myself. I write the four-part escalation brief (below) and hand the decision to the human now. That's the entire next action.\n\n## Why\n\nThis sits on the skill's high-stakes parallel path (row 3: high blast radius \u2014 a multi-tenant billing schema, expensive to migrate \u2014 AND hard to verify \u2014 no test or ground truth exists). I've already completed the two steps the skill prescribes for that path: the blind parallel launch (Opus vs. Codex, neither seeing the other) and one targeted reconcile round (each shown the other's reasoning). Both held their position. The skill is explicit about what happens next: *\"Still unresolved after the reconcile round \u2192 escalate to the human. The escalation brief IS the deliverable \u2014 producing it is settling your part of the decision, not failing to decide.\"*\n\nTwo things I'm explicitly declining to do, because the skill names them as the failure modes this exact setup exists to prevent:\n\n- **Break the tie by fluency.** Opus's answer is 40 lines and confident; Codex's is 6 and terse. The skill: *\"Do not break ties by confidence, detail, or 'industry-standard' priors. A 40-line confident analysis is not more correct than a 6-line terse one \u2014 length asymmetry is fluency, not evidence.\"* Picking single-schema because it's more thoroughly justified would be rewarding verbosity, not correctness.\n- **Adjudicate with my own judgment.** I might have an intuition that one pattern is \"more standard.\" The skill: *\"Substantive disagreement is a stop condition, not a coin-flip.\"* My prior comes from the same training distributions the two executors already drew from \u2014 it adds no independent information, and both models have already weighed the standard arguments.\n\nI also don't route this to a third round of reasoning. The skill caps reconciliation at one round in default mode (thorough mode allows a second, but the setup here already says one targeted round happened and both restated). Two Opus-flavored engines circling the same framing is a \"you are looping\" signal, which is exactly why Codex was already brought in as the decorrelated peer in round one \u2014 that card is spent, not re-playable.\n\nThe user's \"settle it now\" pressure doesn't change this. The skill addresses it directly: *\"'The user wants it settled now' does not transfer an unverifiable, expensive-to-undo call to you; the human usually holds exactly the facts the models lack (growth forecasts, compliance scope, budget, risk appetite).\"* Urgency doesn't make the models' disagreement resolvable \u2014 it's still turning on facts (future tenant count, compliance obligations) that live outside this session. What I owe the user right now is not a coin-flip dressed as an answer, but the fastest possible path to a decision they can actually stand behind \u2014 which is a sharp, comparably-weighted brief they can resolve in minutes because they hold the missing variables.\n\n## The escalation brief\n\n**1. The decision, and why it hit the parallel path**\n\nSchema design for a multi-tenant billing system: single shared schema with a `tenant_id` column on every table (+ row-level security) vs. schema-per-tenant. This hit the parallel path because both conditions were true: blast radius is high (billing data, and a schema-shape decision is very expensive to migrate once tenants are onboarded and data has accumulated), and it's hard to verify (no test, benchmark, or ground truth distinguishes the two in the abstract \u2014 the right answer depends on facts about the business, not facts about the code).\n\n**2. Both positions, at comparable depth**\n\n- **Single shared schema + `tenant_id` column + row-level security** (deep-reasoner / Opus). Every tenant's rows live in the same tables, distinguished by a `tenant_id` column; row-level security policies enforce isolation at query time. Argues from indexing strategy (a `tenant_id`-led composite index keeps per-tenant queries efficient without per-tenant infrastructure), a stated migration plan (how to introduce and backfill the column and RLS policies), and named failure modes (a missing or misapplied RLS policy leaking cross-tenant rows; index bloat as tenant count grows; noisy-neighbor query load on shared tables). The strength of this design is operational simplicity at scale: one schema to migrate, one connection pool, one set of monitoring dashboards, and it scales cleanly to a large number of small tenants. The risk is that isolation is enforced by policy correctness rather than physical separation \u2014 a single RLS bug or a forgotten `tenant_id` filter in a hand-rolled query is a cross-tenant data leak, which in billing is a compliance incident, not just a bug.\n\n- **Schema-per-tenant** (Codex / GPT-5). Each tenant gets its own schema (or database), so isolation is physical rather than policy-enforced. The two cited reasons: blast-radius isolation (a bug, bad migration, or runaway query is contained to one tenant's schema and cannot touch another's data by construction) and per-tenant backup/restore granularity (a single tenant can be backed up, restored, or exported independently \u2014 relevant for compliance requests, tenant offboarding, or a tenant-specific incident). The answer is terse and doesn't elaborate indexing or migration mechanics, so those costs are implicit rather than argued: N schemas means N times the migration work per schema change, connection/pool management gets harder as tenant count grows, and cross-tenant reporting or analytics needs to fan out across schemas instead of a single `WHERE tenant_id = ?`. Its strength is that isolation doesn't depend on every query getting a filter or policy right \u2014 the database boundary does the enforcing.\n\nBoth models held their position through one reconcile round with full visibility into the other's argument \u2014 this is genuine disagreement between reasonable engineers, not an error either side would concede on more thinking.\n\n**3. The crux variables, and what would settle each one**\n\n- **Expected tenant count and its growth trajectory.** Schema-per-tenant is well-trodden for tens to low hundreds of tenants; it gets operationally painful (migration fan-out, connection overhead, monitoring surface) somewhere in the hundreds-to-thousands range, though the exact knee depends on tooling maturity. Single-schema has no such ceiling but starts \"paying\" for its RLS-based isolation from tenant one. *Settles it:* a rough target for tenant count at 1-year and 3-year horizons \u2014 is this system aimed at dozens of large enterprise customers or thousands of small ones?\n\n- **Compliance and contractual isolation requirements.** Some compliance regimes (or customer contracts, common in enterprise billing/finance) require demonstrable physical data isolation per tenant \u2014 not just \"we have RLS policies,\" but a schema/database boundary an auditor can point to. If that requirement exists, it doesn't just favor schema-per-tenant, it may make single-schema-with-RLS a non-starter regardless of the operational tradeoffs. *Settles it:* does any current or anticipated customer contract, or regulatory regime (SOC 2 scope, data residency, sector-specific rules), require physical rather than logical tenant isolation?\n\n- **Tolerance for a cross-tenant leak vs. tolerance for operational complexity.** These are the two failure modes each design is built to avoid, and they trade off directly: single-schema's risk is a policy bug causing a cross-tenant data leak in billing data; schema-per-tenant's risk is migration/tooling complexity causing an outage or slow rollout as tenant count grows. Which failure mode is more costly to this business is a risk-appetite call, not a technical one. *Settles it:* if forced to choose, is a cross-tenant data-visibility incident or a degraded multi-tenant migration/ops process the more expensive failure for this product and its customers?\n\n**4. The question(s) for the human**\n\n1. What's the realistic tenant-count target at 1 and 3 years \u2014 tens/hundreds of larger tenants, or thousands+ of smaller ones?\n2. Does any current or expected customer contract or compliance regime require physical (schema/database-level) tenant isolation, as opposed to logical isolation via row-level security?\n3. Between a cross-tenant data leak and a slower/harder multi-schema migration process, which failure mode is less acceptable for this business?\n\nNo default pick, no recommendation, no lean is offered here \u2014 per the skill's rule, that would just be a fifth, hidden tie-break dressed as neutrality.\n"}], "grading": {"expectations": [{"text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)", "passed": true, "evidence": "\"No default pick, no recommendation, no lean is offered here \u2014 per the skill's rule, that would just be a fifth, hidden tie-break dressed as neutrality.\""}, {"text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)", "passed": true, "evidence": "Four-part escalation brief produced; part 4 asks tenant-count trajectory, physical-isolation compliance requirements, and which failure mode is less acceptable."}, {"text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning", "passed": true, "evidence": "\"Picking single-schema because it's more thoroughly justified would be rewarding verbosity, not correctness\u2026 My prior comes from the same training distributions the two executors already drew from.\""}, {"text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one", "passed": true, "evidence": "Brief part 2 presents both designs at deliberately comparable depth, including strengths and risks of each."}], "summary": {"total": 4, "passed": 4, "failed": 0, "pass_rate": 1.0}}}, {"id": "eval-1-conflict-escalation-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "# Next action\n\nI stop delegating and make the call myself, using the two analyses as inputs rather than trying to extract a third opinion from either executor.\n\nConcretely, in this session I will:\n\n1. **Extract the actual crux, not just the conclusions.** Both Opus and Codex are not disagreeing about facts \u2014 they're weighting the same known trade-off differently (query/operational simplicity vs. blast-radius isolation). Opus's 40 lines and Codex's 6 lines are not \"more confident = more correct\"; length and confidence are not evidence. I re-read both for the *conditions under which each would change its answer* \u2014 e.g., Opus's RLS approach likely degrades if tenant count or compliance requirements push toward hard isolation (e.g., a tenant needs its own encryption key, its own restore point, or contractually cannot share physical storage with others); Codex's schema-per-tenant likely degrades if tenant count grows into the thousands (schema-per-tenant has real operational ceilings \u2014 migrations, connection pooling, and catalog bloat get painful well before \"many thousands\" of schemas).\n\n2. **Turn the disagreement into a decision rule, not a coin flip.** I write out, in one paragraph, the conditional: *if you expect low-hundreds of tenants with hard per-tenant compliance/isolation needs (e.g., regulated customers requiring dedicated backup/restore or contractual data segregation), go schema-per-tenant; if you expect the tenant count to grow past roughly 1,000\u201310,000 and isolation needs are satisfiable by RLS + strong test coverage, go shared-schema with tenant_id + RLS.* This is the one piece of synthesis a third parallel model round cannot produce, because the deciding variables aren't in either executor's context \u2014 they're in the user's roadmap and compliance obligations, which the prompt itself says are \"genuinely uncertain\" to the models but not necessarily unknown to the user.\n\n3. **Ask the user two short, closed questions** that map directly onto the decision rule above \u2014 not \"which do you prefer\" (they already can't decide, that's why they escalated), but factual questions only they can answer:\n   - Rough expected tenant count in 2\u20133 years (tens/hundreds vs. thousands+)?\n   - Any known/likely regulatory or contractual requirement for physical data segregation per tenant (not just logical/RLS isolation)?\n\n4. **Commit to a default if they can't answer immediately.** Since the user wants this settled *in this session* and may not have precise numbers, I state upfront that absent a clear answer, I recommend shared-schema + tenant_id + RLS as the default, because: it is the more common industry-default for SaaS billing systems at unknown-but-growing scale, it preserves an escape hatch (a specific high-compliance tenant can later be split out into its own schema or database without re-architecting everyone else), whereas the reverse migration \u2014 collapsing many per-tenant schemas back into one \u2014 is the more expensive direction to walk back from. I say this plainly as *my* recommendation and rationale, not as \"Opus was right,\" so the user is deciding on the merits I lay out, not on which model sounded more authoritative.\n\n5. **What I explicitly do not do:** I do not run a third blind parallel round with the same prompt \u2014 neither executor has new information, so a third round would just produce a third restatement. I do not pick Opus's answer by default because it's longer and more detailed \u2014 verbosity isn't a tiebreaker. I do not dump both raw analyses on the user and call the disagreement \"resolved\" \u2014 they asked me to settle it, so forwarding the unresolved conflict wholesale would be abdicating the one thing only I can do here: synthesize across the two analyses and combine that with the user's own knowledge of their roadmap to produce one recommendation with a stated, falsifiable rationale, and an explicit fallback path if the initial call turns out wrong (design the tenant_id/RLS schema so a given tenant's tables can be split into a dedicated schema later without a full rewrite).\n\n**Why this is the right next action:** the two reconcile rounds already established that this is a genuine judgment call under uncertainty, not a factual gap either model can close by thinking harder. More model-vs-model iteration has diminishing returns once both sides have seen each other's best argument and held firm. The only inputs left that could actually move the decision are (a) synthesis of *why* each model concluded what it did \u2014 which I can do by reading their reasoning myself \u2014 and (b) tenant-growth/compliance facts that live with the user, not with either executor. So my job shifts from \"referee two models\" to \"make the architectural call, own it, and give the user a short, concrete way to override it if they know something I don't.\"\n"}], "grading": {"expectations": [{"text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)", "passed": false, "evidence": "\"absent a clear answer, I recommend shared-schema + tenant_id + RLS as the default\" \u2014 an explicit default pick for one side."}, {"text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)", "passed": true, "evidence": "Asks two closed questions: expected tenant count in 2\u20133 years, and regulatory/contractual physical-segregation requirements."}, {"text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning", "passed": false, "evidence": "Default justified because \"it is the more common industry-default for SaaS billing systems\" \u2014 precisely the industry-prior tie-break. (It did correctly refuse to use length/confidence.)"}, {"text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one", "passed": true, "evidence": "Writes a conditional decision rule covering both branches (low-hundreds+compliance \u2192 per-tenant; 1k\u201310k+ with RLS-satisfiable isolation \u2192 shared)."}], "summary": {"total": 4, "passed": 2, "failed": 2, "pass_rate": 0.5}}}, {"id": "eval-2-recon-context-policy-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "# Plan: Extract session-handling logic from src/auth into its own package\n\n## Reasoning against the skill's routing rule (SKILL.md)\n\nI have not read any of the five files, and I should not start by reading them\nmyself. The Cost & context policy is explicit: \"Don't read to understand \u2014\ndispatch scout. If understanding or locating something needs more than ~100\nlines read, that is scout's job.\" ~2000 lines across 5 files is far past that\nthreshold, so step 1 is reconnaissance, not my own reading.\n\nThis task also trips the **high-stakes** flag from the routing table (row 3):\nblast radius is high \u2014 the task is explicitly auth/session code, named in the\nskill's own blast-radius list (\"security & auth\") \u2014 and it is hard to verify\nby a diff or a single test alone, because subtle session bugs (fixation,\npremature invalidation, token/session desync across the extracted boundary)\ndon't reliably surface as compile errors. Row 3 fires only once both\nconditions are confirmed against real content, so I can't invoke it blind;\nscout's inventory is what lets me confirm blast radius and coupling concretely\nenough to decide whether the *design* step goes to deep-reasoner solo or to\nthe Opus+Codex blind-parallel path.\n\nSo the sequence is:\n\n1. **Scout (Haiku, read-only)** produces a full structural inventory of all\n   five files \u2014 this is a **data-handoff recon** per dispatch-prompt.md: the\n   inventory feeds deep-reasoner next, so it returns in full, not truncated to\n   \u226420 lines, and I relay it verbatim without re-reading it myself.\n2. **deep-reasoner (Opus)**, using scout's inventory as input, designs the\n   extraction: the new package's boundary and public interface, what exactly\n   counts as \"session-handling logic\" at the fuzzy edges (e.g., do\n   session-scoped functions in tokens.go move too?), and the acceptance\n   check. Given \"subtle... thoroughly and correctly\" plus the high-stakes\n   flag, I will present this design step's output alongside a Codex\n   consult/adversarial-falsify pass before locking the interface \u2014 not\n   because Opus is assumed wrong, but because the risk here is hard to verify\n   any other way, and a decorrelated second opinion is cheap insurance before\n   freezing a contract that fast-worker will build against.\n3. Only once the interface is frozen does the mechanical move-and-rewire\n   fan out to fast-worker (Sonnet), one file or one cohesive slice at a time,\n   each against the same frozen interface, followed by build+test as the\n   acceptance check and a fresh, blind reviewer for anything not cheaply\n   verifiable (per the Verification stage).\n\n## Sequence of tool calls (first three steps)\n\n**Step 1 \u2014 Dispatch scout for full recon (data-handoff, not a summary).**\nOnly `general-purpose` is available this session (named subagents not yet\ninstalled), so this uses the fallback path: `Agent(subagent_type:\n\"general-purpose\", model: \"haiku\", \u2026)` with the scout role preamble prepended\nmanually, since a bare Haiku generalist has no operating contract otherwise.\n\n**Step 2 \u2014 Once scout returns, relay its full inventory (verbatim, unread by\nme beyond skimming for the handoff) into a deep-reasoner dispatch** \u2014\n`Agent(subagent_type: \"general-purpose\", model: \"opus\", \u2026)` with the\ndeep-reasoner preamble prepended, asking for the extraction design: target\npackage layout, public interface, what moves vs. stays, and the migration's\nacceptance check. Scout's output is pasted into this dispatch's Inputs field\n(or handed as a file path if it exceeds ~20 lines, which a 5-file/2000-line\ninventory almost certainly will).\n\n**Step 3 \u2014 Depending on what the design step's blast-radius/verifiability\npicture looks like once I actually see scout's inventory**, either (a) run\nCodex (`peer.sh --mode consult`) in parallel with deep-reasoner on the same\ndesign question, blind, then reconcile per the parallel-path rules, or (b)\nrun deep-reasoner solo and route its frozen interface to Codex afterward as\nan adversarial review pass before fast-worker starts building. I will decide\n(a) vs. (b) from scout's concrete findings, not before \u2014 the skill is explicit\nthat row 3 fires on confirmed dual-condition, not on a guess.\n\nI do not read handlers.go/middleware.go/session.go/tokens.go/store.go myself\nat any point in this sequence unless a specific, narrow question later needs\na targeted read the executors couldn't resolve (e.g., adjudicating a\ndisagreement) \u2014 even then, that's a last resort, not a default.\n\n## Full dispatch prompt \u2014 first delegation (scout recon)\n\n```\nAgent(subagent_type: \"general-purpose\", model: \"haiku\", prompt: \"\nYou are acting as a read-only scout. Collect, don't judge \u2014 no fixes, no\ndesign opinions. Your final message IS the return value.\n\nContext: this recon feeds a deep-reasoner (Opus) design pass that will define\na new package boundary for extracting session-handling logic out of\nsrc/auth; the design executor has not seen this code and will work only from\nyour inventory, so completeness matters more than brevity here.\n\nGoal: Produce a full structural inventory of the auth module so the design\n                  step can decide what moves into a new session package and\n                  what stays in src/auth. Specifically, for each of the five\n                  files, report:\n                  1. Every top-level function/method/type declared, with its\n                     exported/unexported status and a one-line description of\n                     what it does.\n                  2. Which of those are session-related (session creation,\n                     lookup, validation, expiry/invalidation, storage,\n                     session-to-token binding) versus auth-but-not-session\n                     (e.g., login handler routing, password checks, pure\n                     token issuance unrelated to session state) versus\n                     ambiguous/could-go-either-way \u2014 call out the ambiguous\n                     ones explicitly, do not silently classify them.\n                  3. Cross-file coupling: which functions/types in one file\n                     call, embed, or depend on functions/types in another of\n                     the five files. Note shared structs, shared package-level\n                     state (vars, consts, caches, mutexes), and any global\n                     init-order dependency.\n                  4. External callers: anything outside these five files\n                     (elsewhere in the repo) that calls into them, especially\n                     into whatever looks session-related \u2014 this defines the\n                     public surface the new package must preserve.\n                  5. Existing test coverage: which test files exist for this\n                     module, and which of the session-related functions you\n                     identified in (2) currently have tests versus none.\nInputs:           src/auth/handlers.go, src/auth/middleware.go,\n                  src/auth/session.go, src/auth/tokens.go, src/auth/store.go\n                  \u2014 read all five in full. Also search the rest of the repo\n                  (grep/glob) for external references to symbols defined in\n                  these five files, and for existing test files covering\n                  src/auth.\nConstraints:      Read-only \u2014 no edits, no fixes, no opinions on how the\n                  extraction should be structured. If the module is larger\n                  than expected or something looks incomplete, say exactly\n                  what you covered and what you did not, rather than\n                  silently truncating.\nAcceptance check: Every claim in your inventory carries a path:line anchor\n                  into the actual source (or the test file, for coverage\n                  claims).\nReturn format:    Status first (DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT |\n                  BLOCKED), then the full structured inventory grouped by the\n                  five report sections above, each entry path:line anchored.\n                  This is a data-handoff recon feeding another executor, not\n                  a summary for a human \u2014 return the complete inventory,\n                  uncompressed; do not cap it to a line budget or omit\n                  entries to stay short. If any specific item requires design\n                  judgment rather than fact-finding, list the fact you found\n                  plus the note 'requires reasoning \u2014 route to deep-reasoner'\n                  instead of deciding it yourself.\n\")\n```\n\n## Note on what I did not yet do\n\nI did not decide the fast-worker fan-out shape (per-file vs. per-slice\ndispatch, worktree isolation, etc.) because the skill's \"Plan then fan out\"\npattern requires the shared interface to be frozen first \u2014 deciding\npartition boundaries before the interface exists risks fragmentation, the\nexact failure mode the skill's guardrail section calls out. That decision\ncomes after step 2, using deep-reasoner's frozen interface as the contract\neach fast-worker slice is checked against.\n"}], "grading": {"expectations": [{"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)", "passed": true, "evidence": "\"I do not read handlers.go/middleware.go/session.go/tokens.go/store.go myself at any point in this sequence unless\u2026 adjudicating a disagreement \u2014 even then, that's a last resort.\""}, {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings", "passed": true, "evidence": "First dispatch is the scout recon on the fallback path; \"Acceptance check: Every claim in your inventory carries a path:line anchor.\""}, {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)", "passed": true, "evidence": "Dispatch carries Context / Goal / Inputs / Constraints / Acceptance check / Return format fields, including the status-token-first return rule."}, {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns", "passed": true, "evidence": "\"Step 2 \u2014 relay its full inventory into a deep-reasoner dispatch (Opus)\u2026 I will decide (a) vs (b) from scout's concrete findings, not before.\""}], "summary": {"total": 4, "passed": 4, "failed": 0, "pass_rate": 1.0}}}, {"id": "eval-2-recon-context-policy-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "answer.md", "type": "text", "content": "# Plan: Extracting session-handling logic from src/auth into its own package\n\n## Why reconnaissance comes first\n\nI have not seen any of these five files. The user explicitly flagged the code as\n\"subtle\" and wants it done \"thoroughly and correctly\" \u2014 that's a direct signal\nthat a blind delegation (telling an executor to go extract \"session logic\" out\nof files I haven't read) is the wrong first move. If I dispatch a worker into\nunfamiliar, security-sensitive code armed with only the user's one-paragraph\ndescription, I'm gambling that the worker's read of \"what counts as\nsession-handling logic\" matches reality, and I have no independent basis to\ncheck its work afterward. Before I write a single delegation prompt I need to\nknow:\n\n- Where the actual seams are (does `session.go` cleanly own sessions, or is\n  session state threaded through `handlers.go` and `middleware.go` too?)\n- What's exported vs. unexported, and what currently depends on the public\n  API of `src/auth` from outside the package (breaking external callers would\n  be a bigger problem than the refactor itself)\n- Whether there's shared mutable state (stores, caches, mutexes) that crosses\n  the five files \u2014 the single riskiest thing to split incorrectly\n- What test coverage exists today, since that's the safety net for verifying\n  the refactor didn't change behavior\n\nSo step 1 is cheap, read-only reconnaissance \u2014 not a full redesign, just enough\nof a map that I (the orchestrator) can make the real architectural call about\nwhere the package boundary goes, and so that my first substantive delegation\nprompt names real symbols and real risks instead of vague categories borrowed\nfrom the user's summary.\n\n## Tool call sequence (the first two or three steps that matter)\n\n**Step 1 \u2014 Parallel, cheap, read-only structural recon (single message, multiple\ntool calls, since these are independent queries with no ordering dependency):**\n\n```\nBash: wc -l src/auth/handlers.go src/auth/middleware.go src/auth/session.go src/auth/tokens.go src/auth/store.go\nGrep: pattern \"^func \" glob \"src/auth/*.go\" (function inventory, source order)\nGrep: pattern \"type \\w+ struct|type \\w+ interface\" glob \"src/auth/*.go\" (core types)\nGrep: pattern \"sync\\.(Mutex|RWMutex|Once)|package-level var\" glob \"src/auth/*.go\" (shared-state red flags)\nGlob: src/auth/**/*_test.go (existing test coverage)\nGrep: pattern \"\\\"<module-path>/src/auth\\\"\" (external callers, searched repo-wide outside src/auth)\n```\n\nI run these together in one message because they're independent read-only\nlookups \u2014 no reason to serialize them, and doing so just burns turns. The goal\nat this stage isn't deep understanding, it's a cheap function/type/test\ninventory and a first pass at where shared state lives, so I know what I'm\nwalking into before I commit real reading time or anyone else's execution time.\n\n**Step 2 \u2014 I read all five files myself, in full.** Not delegated. Given the\nuser's explicit \"subtle... thoroughly and correctly\" framing, the one thing I\nwill not outsource is forming my own understanding of this code \u2014 I'm the one\nwho has to decide where the package boundary goes and whose judgment the user\nis actually trusting here. Using `Read` directly on all five files is also\njust cheaper than routing through a sub-agent and re-reading its summary, for\ncontent I'm going to reason over myself rather than merely file away.\n\nWhile reading, I build three concrete lists:\n1. Every symbol (type/func/const/var) that is genuinely session-lifecycle\n   (create / validate / refresh / expire / destroy / persist a session) versus\n   everything else (login-handler orchestration, HTTP middleware wiring, token\n   *format* concerns merely called by session code).\n2. Every call site where a \"stays in auth\" file reaches into a \"moves to\n   sessions\" symbol, and vice versa \u2014 this defines the new package's required\n   public API and which direction the import edge has to run.\n3. Anything that smells like shared mutable state (a package-level map, a\n   singleton store, a mutex) touched from more than one file. This is the\n   highest-risk category: splitting shared state across a package boundary can\n   silently change locking or lifetime semantics even when every individual\n   function \"looks\" correctly moved.\n\n**Step 3 \u2014 Only now do I delegate**, and only the portion that's actually ready\nto be delegated. Given the explicit correctness bar, I do not hand the whole\nextraction to a single worker unsupervised in one shot. Concretely:\n\n- I decide the target package layout and the new package's public API myself\n  \u2014 optionally sanity-checking the boundary design with an Opus-pinned\n  `deep-reasoner` agent as a second opinion, since this is exactly the kind of\n  \"hard, easy to get subtly wrong\" call that benefits from a second pass before\n  it's frozen. I produce a written extraction map: which symbols move\n  verbatim, which need signature changes, and where a compatibility shim needs\n  to stay behind in `auth` for existing external callers.\n- I hand that concrete, frozen map to a `fast-worker` (Sonnet-pinned) as a\n  fully mechanical task: move these named symbols to this named new package,\n  update these named import paths, do not make judgment calls about what else\n  belongs there.\n- If Step 1/2 turned up thin or missing test coverage over the session-related\n  symbols, I treat that as a blocker to close first \u2014 I'd add characterization\n  tests for the current behavior before moving code, not after, so \"no\n  behavior changed\" is actually checkable rather than assumed.\n- After the move, I run the test suite myself and diff-review the actual\n  result before calling it done \u2014 I don't take a worker's \"done\" at face value\n  for code the user has called out as subtle. Given the stated bar of\n  \"thoroughly and correctly,\" I would also consider routing the final diff\n  through Codex (`peer.sh`) as an independent, different-vendor review pass,\n  since a worker checking its own move is a weaker guarantee than a second,\n  independently-reasoning set of eyes.\n\nIn short: what the task calls \"the first delegation\" is the recon/mapping\npass, not the extraction itself, because right now I don't know enough about\nthis code to write a safe extraction prompt \u2014 and producing a\nconfident-sounding extraction prompt anyway would be worse than admitting I\nneed the information-gathering step first. Since no dedicated `scout` subagent\nis installed in this session, I'd run this pass as\n`Agent(subagent_type: \"general-purpose\", model: \"haiku\")`, instructed to be\nstrictly read-only.\n\n## Full dispatch prompt for the first delegation (verbatim)\n\nThis is the prompt I'd send via the `Agent` tool\n(`subagent_type: \"general-purpose\"`, `model: \"haiku\"`) for the first\ndelegation \u2014 a read-only mapping pass whose output feeds my own boundary\ndesign and the later extraction delegation:\n\n---\n\n```\nYou are doing reconnaissance only \u2014 not refactoring, not designing, not\nfixing anything. Do not edit any files. This is a read-only mapping task\nwhose output will be used by someone else (me) to design a package\nextraction, so completeness and precision matter more than speed.\n\nCONTEXT: We are about to extract all session-handling logic out of the\n`auth` package (src/auth/handlers.go, src/auth/middleware.go,\nsrc/auth/session.go, src/auth/tokens.go, src/auth/store.go \u2014 roughly 2000\nlines total) into its own new package. I have not yet read these files and\nneed an accurate map before making any architectural decisions. The code's\nowner describes it as \"subtle\" \u2014 assume there are non-obvious dependencies.\nDo not guess or smooth over gaps: report exactly what you find, and flag\nexplicitly anywhere you're uncertain.\n\nDO THE FOLLOWING, IN ORDER, AND REPORT ON EACH:\n\n1. File inventory: for each of the five files, report its line count and\n   every top-level declaration (func, type, const, var) in source order,\n   noting exported vs. unexported.\n\n2. Symbol classification: classify every declaration from step 1 as one of:\n   (a) SESSION-CORE \u2014 directly manages session lifecycle (create, validate,\n       refresh, expire, destroy, persist a session)\n   (b) SESSION-ADJACENT \u2014 not session logic itself, but exists mainly to\n       serve it (e.g. a token helper called only from session code)\n   (c) NOT-SESSION \u2014 auth logic unrelated to sessions (login request\n       handling, password/credential checks, unrelated middleware/routing)\n   (d) UNCLEAR \u2014 cannot confidently classify from local reading; state\n       exactly why (e.g. \"used in both session and non-session contexts,\"\n       \"name doesn't match observed behavior,\" \"depends on code outside\n       these 5 files\"). Do not force a classification you're not confident\n       in \u2014 (d) is a valid and useful answer; guessing wrong here is worse\n       than saying \"unclear.\"\n\n3. Cross-file dependency map: for every SESSION-CORE or SESSION-ADJACENT\n   symbol, list every reference to it (call, type use, pointer) located in\n   NOT-SESSION-classified code, with file:line \u2014 this is the seam map for\n   where the future package boundary gets crossed. Do the reverse too: every\n   SESSION-CORE symbol that itself calls into NOT-SESSION code.\n\n4. Shared mutable state: identify every package-level variable, singleton,\n   in-memory store, cache, or lock (mutex/RWMutex/sync.Once/etc.) touched by\n   more than one of the five files. For each, list every file and function\n   that reads or writes it. This is the highest-risk category for the\n   refactor \u2014 be exhaustive here even if it costs you time elsewhere.\n\n5. External surface: search the rest of the repository (outside src/auth)\n   for anything importing the auth package or referencing its exported\n   session-related symbols directly. List every call site with file:line.\n   This determines what breaks if symbols move without a compatibility shim.\n\n6. Existing test coverage: list every test file exercising any of the five\n   files (by name or import), and roughly what each covers (e.g.\n   \"TestSessionExpiry \u2014 covers session.go expiry logic only,\" \"no test found\n   covering store.go persistence\"). Explicitly call out which SESSION-CORE\n   symbols from step 2 have zero discoverable test coverage \u2014 these are the\n   riskiest to move without a safety net.\n\n7. Open questions: anything important for someone designing this extraction\n   to know, even if it doesn't fit the categories above \u2014 naming\n   inconsistencies, TODOs, apparent dead code, anything that looks like a\n   workaround for a bug.\n\nFORMAT: Use these exact seven numbered section headers so the output is easy\nto parse. Use file:line references throughout instead of quoting large code\nblocks. Do NOT propose a package design or extraction plan yourself \u2014 that\ndecision is intentionally being made by someone else after reviewing your\nreport. Your job is strictly to observe and report, not to recommend.\n\nReturn your complete findings as your final message text (this will be read\ndirectly \u2014 do not write it to a file instead).\n```\n\n---\n\n## What happens after this delegation returns\n\n1. I read the recon report in full and personally verify anything marked\n   UNCLEAR or flagged as high-risk (shared mutable state, untested\n   SESSION-CORE symbols, external callers of soon-to-move symbols) by reading\n   those specific sections myself \u2014 I don't take the report on faith for the\n   risky parts, since surfacing exactly these traps before committing to a\n   design was the entire point of doing recon first.\n2. I design the new package's boundary and public API, optionally with an\n   Opus-pinned `deep-reasoner` pass as a second opinion given the \"subtle,\n   must be correct\" framing \u2014 producing a concrete extraction map: which\n   symbols move verbatim, which need signature changes, where a\n   backward-compatible shim must remain in `auth`, and how any shared mutable\n   state from item 4 gets resolved (e.g., does a store's lock move wholesale\n   into the new package, or does ownership need to change).\n3. I check whether existing test coverage (item 6) is sufficient to trust a\n   \"no behavior change\" refactor. If SESSION-CORE symbols have no coverage, I\n   add characterization tests before moving code, not after \u2014 subtle,\n   security-adjacent code deserves a safety net that predates the move, not\n   one retrofitted to match whatever the move happened to produce.\n4. Only then do I write a second, fully-specified dispatch prompt \u2014 this time\n   to a `fast-worker` (Sonnet-pinned) \u2014 naming exact symbols, exact source and\n   destination files/package paths, and exact import updates, since by that\n   point the judgment calls have already been made and what remains is\n   genuinely mechanical.\n5. After the move, I verify directly: run the full existing test suite plus\n   any new characterization tests, diff-review the actual changes myself, and\n   likely route the final diff through Codex (`peer.sh`) for an independent,\n   cross-vendor review pass before calling this \"done\" \u2014 given the user's\n   explicit bar of \"thoroughly and correctly,\" a single same-vendor pass\n   checking its own work is not enough independent verification on its own.\n"}], "grading": {"expectations": [{"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)", "passed": false, "evidence": "\"Step 2 \u2014 I read all five files myself, in full. Not delegated \u2014 this is the one part of 'understanding the code' I keep.\" (~2000 lines into the orchestrator's own context before any recon digest exists.)"}, {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings", "passed": true, "evidence": "First dispatch is \"reconnaissance only \u2014 not refactoring\u2026 read-only mapping task\" and instructs \"Use file:line references throughout.\""}, {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)", "passed": false, "evidence": "A FORMAT section exists (seven numbered headers) but there is no explicit acceptance check \u2014 no objective pass criterion is named as such; also instructs \"Return your complete findings as your final message text \u2014 do not write it to a file\" with no status vocabulary."}, {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns", "passed": false, "evidence": "\"design the package boundary myself (optionally with an Opus-pinned second opinion)\" \u2014 the orchestrator keeps the design call; Opus is optional advice, not the assigned design tier."}], "summary": {"total": 4, "passed": 1, "failed": 3, "pass_rate": 0.25}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "orchestrate", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-07-05T06:46:41Z", "evals_run": [0, 1, 2], "runs_per_configuration": 3}, "runs": [{"eval_id": 0, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 3, "failed": 0, "total": 3, "time_seconds": 58.2, "tokens": 46488, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence", "passed": true, "evidence": "\"no Bash, no Grep/Glob, no Agent spawn, no peer.sh consult, no report file\" \u2014 plan is exactly two tool calls run directly."}, {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)", "passed": true, "evidence": "Steps: Read(README.md) then Edit(old_string: \"teh quick brown fox\", new_string: \"the quick brown fox\"). \"That's it.\""}, {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix", "passed": true, "evidence": "\"No verification-stage reviewer is warranted either: this is my own trivial edit, not a delegated result\u2026 the Verification stage governs fan-in from delegated work, not solo edits.\""}], "notes": []}, {"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 76.3, "tokens": 46042, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)", "passed": true, "evidence": "\"No default pick, no recommendation, no lean is offered here \u2014 per the skill's rule, that would just be a fifth, hidden tie-break dressed as neutrality.\""}, {"text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)", "passed": true, "evidence": "Four-part escalation brief produced; part 4 asks tenant-count trajectory, physical-isolation compliance requirements, and which failure mode is less acceptable."}, {"text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning", "passed": true, "evidence": "\"Picking single-schema because it's more thoroughly justified would be rewarding verbosity, not correctness\u2026 My prior comes from the same training distributions the two executors already drew from.\""}, {"text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one", "passed": true, "evidence": "Brief part 2 presents both designs at deliberately comparable depth, including strengths and risks of each."}], "notes": []}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 125.7, "tokens": 50340, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)", "passed": true, "evidence": "\"I do not read handlers.go/middleware.go/session.go/tokens.go/store.go myself at any point in this sequence unless\u2026 adjudicating a disagreement \u2014 even then, that's a last resort.\""}, {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings", "passed": true, "evidence": "First dispatch is the scout recon on the fallback path; \"Acceptance check: Every claim in your inventory carries a path:line anchor.\""}, {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)", "passed": true, "evidence": "Dispatch carries Context / Goal / Inputs / Constraints / Acceptance check / Return format fields, including the status-token-first return rule."}, {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns", "passed": true, "evidence": "\"Step 2 \u2014 relay its full inventory into a deep-reasoner dispatch (Opus)\u2026 I will decide (a) vs (b) from scout's concrete findings, not before.\""}], "notes": []}, {"eval_id": 0, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 3, "failed": 0, "total": 3, "time_seconds": 29.7, "tokens": 30661, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence", "passed": true, "evidence": "\"No delegation. I will not spawn deep-reasoner, fast-worker, or scout, and I will not call peer.sh/Codex.\""}, {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)", "passed": true, "evidence": "Read \u2192 Edit \u2192 \"git diff README.md (or just re-read the line)\" \u2014 the confirmation step stays within the allowed cheap re-check; no agents involved."}, {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix", "passed": true, "evidence": "\"The right call for a solo-sized task is to solo it\" \u2014 no reviewer, no contract machinery proposed."}], "notes": []}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 2, "failed": 2, "total": 4, "time_seconds": 57.0, "tokens": 32393, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)", "passed": false, "evidence": "\"absent a clear answer, I recommend shared-schema + tenant_id + RLS as the default\" \u2014 an explicit default pick for one side."}, {"text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)", "passed": true, "evidence": "Asks two closed questions: expected tenant count in 2\u20133 years, and regulatory/contractual physical-segregation requirements."}, {"text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning", "passed": false, "evidence": "Default justified because \"it is the more common industry-default for SaaS billing systems\" \u2014 precisely the industry-prior tie-break. (It did correctly refuse to use length/confidence.)"}, {"text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one", "passed": true, "evidence": "Writes a conditional decision rule covering both branches (low-hundreds+compliance \u2192 per-tenant; 1k\u201310k+ with RLS-satisfiable isolation \u2192 shared)."}], "notes": []}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.25, "passed": 1, "failed": 3, "total": 4, "time_seconds": 141.3, "tokens": 42443, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)", "passed": false, "evidence": "\"Step 2 \u2014 I read all five files myself, in full. Not delegated \u2014 this is the one part of 'understanding the code' I keep.\" (~2000 lines into the orchestrator's own context before any recon digest exists.)"}, {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings", "passed": true, "evidence": "First dispatch is \"reconnaissance only \u2014 not refactoring\u2026 read-only mapping task\" and instructs \"Use file:line references throughout.\""}, {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)", "passed": false, "evidence": "A FORMAT section exists (seven numbered headers) but there is no explicit acceptance check \u2014 no objective pass criterion is named as such; also instructs \"Return your complete findings as your final message text \u2014 do not write it to a file\" with no status vocabulary."}, {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns", "passed": false, "evidence": "\"design the package boundary myself (optionally with an Opus-pinned second opinion)\" \u2014 the orchestrator keeps the design call; Opus is optional advice, not the assigned design tier."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 86.7333, "stddev": 34.9386, "min": 58.2, "max": 125.7}, "tokens": {"mean": 47623.3333, "stddev": 2363.2472, "min": 46042, "max": 50340}}, "without_skill": {"pass_rate": {"mean": 0.5833, "stddev": 0.3819, "min": 0.25, "max": 1.0}, "time_seconds": {"mean": 76.0, "stddev": 58.1755, "min": 29.7, "max": 141.3}, "tokens": {"mean": 35165.6667, "stddev": 6361.5754, "min": 30661, "max": 42443}}, "delta": {"pass_rate": "+0.42", "time_seconds": "+10.7", "tokens": "+12458"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

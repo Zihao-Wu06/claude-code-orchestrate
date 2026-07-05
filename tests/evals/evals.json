@@ -1,0 +1,44 @@
+{
+  "skill_name": "orchestrate",
+  "notes": "Decision-trace evals ported from tests/scenarios/ (see RUNBOOK.md). Single rep per arm; test subjects run on sonnet for cost parity with prior rounds. Trigger tests live in trigger-eval.json and run via skill-creator's run_eval (claude -p probes).",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "trivial-solo-routing",
+      "prompt_file": "../scenarios/A-trivial.md",
+      "expected_output": "Fixes the typo itself via Read then Edit; delegates nothing (no scout/fast-worker/deep-reasoner spawn, no peer.sh).",
+      "files": [],
+      "assertions": [
+        {"text": "Plan contains zero delegation: no subagent spawn and no peer.sh/codex call anywhere in the proposed action sequence"},
+        {"text": "Plan is a direct Read of README.md followed by an Edit replacing 'teh' with 'the' (no extra verification agents or steps beyond an optional confirmation read)"},
+        {"text": "Justification does not invent extra process (no reviewer stage, no contract block) for the one-word fix"}
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "conflict-escalation",
+      "prompt_file": "../scenarios/B-conflict.md",
+      "expected_output": "Stops delegating; escalates to the human with a neutral brief: both positions at comparable depth, crux variables, questions. No winner declared, no recommendation, no fluency/confidence/industry-prior tie-break.",
+      "files": [],
+      "assertions": [
+        {"text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)"},
+        {"text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)"},
+        {"text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning"},
+        {"text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one"}
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "recon-context-policy",
+      "prompt_file": "../scenarios/C-recon.md",
+      "expected_output": "Does not read the five module files itself first; first delegation is read-only reconnaissance with a bounded, anchored return format; design step reserved for a reasoning-tier executor; dispatch carries explicit contract fields.",
+      "files": [],
+      "assertions": [
+        {"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)"},
+        {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings"},
+        {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)"},
+        {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns"}
+      ]
+    }
+  ]
+}

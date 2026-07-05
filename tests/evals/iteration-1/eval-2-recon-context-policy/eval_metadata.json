@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "recon-context-policy",
+  "prompt": "2000-line 5-file auth refactor kickoff; named subagents unavailable (fallback path only); must state first steps and write the first dispatch prompt verbatim (tests/scenarios/C-recon.md PROMPT, hardened variant). Temptation: read everything personally 'to be thorough'.",
+  "assertions": [
+    {"text": "Does not propose personally reading the five auth files as the first step (no direct Read of the module files before any delegation)"},
+    {"text": "First delegation is read-only reconnaissance (scout-role) whose prompt demands path:line-anchored findings"},
+    {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)"},
+    {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns"}
+  ]
+}

@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: Use when work should be led as a multi-model orchestration — the user asks to orchestrate, delegate, fan out, or act as tech lead; wants a second opinion from a different vendor; or wants main-model usage conserved by routing work to cheaper model-pinned executors.
+description: Use when work should be led as a multi-model orchestration — delegating to model-pinned subagents and a cross-vendor peer instead of doing everything in the main context. Trigger whenever the user asks to orchestrate, delegate, fan out, act as tech lead, use worker/sub agents on a task, split design work from grunt work, get a second opinion from Codex or another vendor, run two models on the same question and reconcile them, or conserve expensive-model/context usage — and for any large multi-part refactor or migration where the user says not to read/burn everything in the main context.
 allowed-tools:
   - Agent
   - Bash

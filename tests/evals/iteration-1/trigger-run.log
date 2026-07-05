@@ -1,0 +1,26 @@
+Evaluating: Use when work should be led as a multi-model orchestration — the user asks to orchestrate, delegate, fan out, or act as tech lead; wants a second opinion from a different vendor; or wants main-model usage conserved by routing work to cheaper model-pinned executors.
+Results: 5/8 passed
+  [FAIL] rate=0/1 expected=True: orchestrate this one: fix the flaky retry test in ci, then extract the
+  [PASS] rate=1/1 expected=True: I've got a gnarly migration: ~40 services need their logging swapped o
+  [FAIL] rate=0/1 expected=True: I want a cross-vendor sanity check on our proposed sharding key for th
+  [PASS] rate=0/1 expected=False: what's actually the difference between opus and sonnet for coding work
+  [PASS] rate=0/1 expected=False: can you run our test suite in parallel with pytest-xdist and tell me w
+  [PASS] rate=0/1 expected=False: fix the typo in README.md line 3: 'teh' should be 'the'. that's it
+  [PASS] rate=0/1 expected=False: write me an agent definition file for a code-review subagent I can dro
+  [FAIL] rate=0/1 expected=True: this refactor is huge (auth + billing + notifications, like 8k lines t
+Evaluating: Use when work should be led as a multi-model orchestration — delegating to model-pinned subagents and a cross-vendor peer instead of doing everything in the main context. Trigger whenever the user asks to orchestrate, delegate, fan out, act as tech lead, use worker/sub agents on a task, split design work from grunt work, get a second opinion from Codex or another vendor, run two models on the same question and reconcile them, or conserve expensive-model/context usage — and for any large multi-part refactor or migration where the user says not to read/burn everything in the main context.
+Results: 5/8 passed
+  [FAIL] rate=0/1 expected=True: orchestrate this one: fix the flaky retry test in ci, then extract the
+  [PASS] rate=1/1 expected=True: this refactor is huge (auth + billing + notifications, like 8k lines t
+  [FAIL] rate=0/1 expected=True: I've got a gnarly migration: ~40 services need their logging swapped o
+  [PASS] rate=0/1 expected=False: what's actually the difference between opus and sonnet for coding work
+  [FAIL] rate=0/1 expected=True: I want a cross-vendor sanity check on our proposed sharding key for th
+  [PASS] rate=0/1 expected=False: fix the typo in README.md line 3: 'teh' should be 'the'. that's it
+  [PASS] rate=0/1 expected=False: can you run our test suite in parallel with pytest-xdist and tell me w
+  [PASS] rate=0/1 expected=False: write me an agent definition file for a code-review subagent I can dro
+Evaluating: Use when work should be led as a multi-model orchestration — delegating to model-pinned subagents and a cross-vendor peer instead of doing everything in the main context. Trigger whenever the user asks to orchestrate, delegate, fan out, act as tech lead, use worker/sub agents on a task, split design work from grunt work, get a second opinion from Codex or another vendor, run two models on the same question and reconcile them, or conserve expensive-model/context usage — and for any large multi-part refactor or migration where the user says not to read/burn everything in the main context.
+Results: 0/4 passed
+  [FAIL] rate=0/3 expected=True: this refactor is huge (auth + billing + notifications, like 8k lines t
+  [FAIL] rate=0/3 expected=True: I've got a gnarly migration: ~40 services need their logging swapped o
+  [FAIL] rate=0/3 expected=True: I want a cross-vendor sanity check on our proposed sharding key for th
+  [FAIL] rate=0/3 expected=True: orchestrate this one: fix the flaky retry test in ci, then extract the

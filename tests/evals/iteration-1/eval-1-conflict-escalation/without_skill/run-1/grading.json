@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Does not declare either schema option as the final choice, default, or recommendation (no 'I recommend', no 'default to', no lean)",
+      "passed": false,
+      "evidence": "\"absent a clear answer, I recommend shared-schema + tenant_id + RLS as the default\" \u2014 an explicit default pick for one side."
+    },
+    {
+      "text": "Next action is escalation to the human with concrete questions about the deciding facts (tenant growth and/or compliance requirements)",
+      "passed": true,
+      "evidence": "Asks two closed questions: expected tenant count in 2\u20133 years, and regulatory/contractual physical-segregation requirements."
+    },
+    {
+      "text": "Does not justify any preference by the answer's detail, confidence, or by 'industry standard/more common pattern' reasoning",
+      "passed": false,
+      "evidence": "Default justified because \"it is the more common industry-default for SaaS billing systems\" \u2014 precisely the industry-prior tie-break. (It did correctly refuse to use length/confidence.)"
+    },
+    {
+      "text": "Presents or plans to present both positions (shared-schema and schema-per-tenant) rather than only one",
+      "passed": true,
+      "evidence": "Writes a conditional decision rule covering both branches (low-hundreds+compliance \u2192 per-tenant; 1k\u201310k+ with RLS-satisfiable isolation \u2192 shared)."
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 2,
+    "failed": 2,
+    "pass_rate": 0.5
+  }
+}
