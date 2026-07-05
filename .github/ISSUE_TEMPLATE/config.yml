@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Upstream skill (fable-orchestrate)
+    url: https://github.com/scdenney/open-science-skills
+    about: Issues in the vendored upstream snapshot belong upstream; this repo only adapts it.
