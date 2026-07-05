@@ -61,6 +61,10 @@ skipped).
 Or just describe the job like a tech-lead brief: goal, context, constraints —
 and ask it to show the plan first.
 
+Full operator's reference — every modifier's effect, what the output looks
+like, the `peer.sh` on/off switch and flags, and the `make` targets — is in
+[docs/USAGE.md](docs/USAGE.md).
+
 ## Features
 
 A first-match routing table, executor-mixing patterns, a blind-parallel
@@ -303,8 +307,9 @@ scripts/ + Makefile      installer + maintenance tooling — `make check` is the
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the pieces fit; the
   seven load-bearing design decisions, each linked to its SKILL.md section
-- [docs/USAGE.md](docs/USAGE.md) — worked /orchestrate examples, which
-  modifier when, and what "wrong-looking" outputs actually mean
+- [docs/USAGE.md](docs/USAGE.md) — the full usage reference: every
+  `/orchestrate` modifier and its effect, the routing tiers, output shapes,
+  the `peer.sh` CLI, `make` targets, and troubleshooting
 - [tests/README.md](tests/README.md) — the three test layers and how to run
   them; [tests/RUNBOOK.md](tests/RUNBOOK.md) — rerun procedures and the iron
   law (no skill edit ships without a scenario rerun)
