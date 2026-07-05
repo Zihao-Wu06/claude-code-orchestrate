@@ -1,8 +1,8 @@
 # Contributing
 
 Small project, strict discipline. The rules below exist because every one of
-them caught a real defect during development — see `tests/results.md` and
-`tests/field-run-1.md` for the receipts.
+them caught a real defect during development — see `tests/records/results.md`
+and `tests/records/field-run-1.md` for the receipts.
 
 ## Setup
 
@@ -22,7 +22,7 @@ No runtime dependencies. Tooling used by `make check`: `bash`, `jq`,
 **Any edit to `skills/orchestrate/SKILL.md`, `skills/orchestrate/dispatch-prompt.md`,
 or `agents/*.md` requires rerunning the behavior scenarios before it ships.**
 No exceptions for "just wording", "just a path", or "obviously harmless" —
-Rounds 4–6 in `tests/results.md` were all reruns for exactly such edits.
+Rounds 4–6 in `tests/records/results.md` were all reruns for exactly such edits.
 
 - Procedure and grading rules: [tests/RUNBOOK.md](tests/RUNBOOK.md)
 - Paste the rerun results table into your PR (the PR template has a slot)

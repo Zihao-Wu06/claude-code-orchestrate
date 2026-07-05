@@ -58,7 +58,7 @@ Initial release: an adaptation of `fable-orchestrate` from
 - **Validation**: six TDD rounds (baseline B failure — fluency tie-break —
   flipped GREEN and held through every subsequent edit); a real end-to-end
   field run whose blind reviewer caught a latent defect the whole chain
-  missed (`tests/field-run-1.md`); a quantified eval suite (with-skill 100%
+  missed (`tests/records/field-run-1.md`); a quantified eval suite (with-skill 100%
   vs baseline 58.3%, `tests/evals/`); trigger tests (0 false positives).
 - **Packaging**: plugin + self-hosted marketplace manifests
   (`claude plugin validate --strict` clean), manual `install.sh`, CI

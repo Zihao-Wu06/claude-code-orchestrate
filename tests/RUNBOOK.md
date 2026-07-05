@@ -18,6 +18,9 @@ built with the official skill-creator harness. To rerun after a skill edit:
    dispatch-prompt.md first" preamble; each run writes `answer.md` into
    `evals/iteration-N/eval-<id>-<name>/<config>/run-1/outputs/` and its
    notification's tokens/duration go into `timing.json` beside it.
+   (These raw run trees stay local — they are gitignored; only
+   `benchmark.{json,md}` and `ANALYSIS.md` are committed. Iteration-1's
+   originals live in git history at `7767a0d`.)
    **Baseline caveat (learned the hard way):** if the skill is installed in
    `~/.claude/skills/`, park it elsewhere for the baseline runs — installed
    skills auto-trigger and contaminate the without_skill arm.
@@ -76,8 +79,8 @@ we are grading the routing decision, not the work.
 Grade only against the PASS/FAIL criteria in each scenario file. Read the
 full response; record verbatim the sentences where the agent justifies its
 choice (these are the rationalizations that skill wording must counter).
-Record every run in `results.md` with: date, scenario, arm (baseline/skill),
-PASS/FAIL, and the verbatim justification.
+Record every run in `records/results.md` with: date, scenario, arm
+(baseline/skill), PASS/FAIL, and the verbatim justification.
 
 ## Known limitations
 

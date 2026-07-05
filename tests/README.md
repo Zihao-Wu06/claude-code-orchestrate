@@ -22,20 +22,22 @@ rerun) lives in [RUNBOOK.md](RUNBOOK.md).
 - `evals/evals.json` — the scenarios as structured eval cases with assertions
 - `evals/trigger-eval.json` — should-trigger / should-not-trigger queries for
   the frontmatter description
-- `evals/iteration-1/` — recorded runs: per-case `answer.md` (evidence),
-  `grading.json` (assertion verdicts with quotes), `timing.json`,
-  `benchmark.{json,md}` (aggregate), `ANALYSIS.md` (caveats and incidents —
-  read this before quoting the numbers)
+- `evals/iteration-1/` — the committed summary: `benchmark.{json,md}`
+  (aggregate numbers) and `ANALYSIS.md` (caveats and incidents — read this
+  before quoting the numbers)
 
 Built on the official skill-creator harness; rerun procedure is in
-RUNBOOK.md. Generated artifacts (`review.html`, `*.log`) are not committed —
-regenerate on demand (`make eval-view` prints the command).
+RUNBOOK.md. Raw run data (per-case `answer.md`, `grading.json`,
+`timing.json`, trigger-results) and generated artifacts (`review.html`,
+`*.log`) are **not committed** — reruns regenerate them locally
+(gitignored), and the iteration-1 originals are preserved verbatim in git
+history at commit `7767a0d`.
 
 ## 3. Records — what actually happened
 
-- `results.md` — every TDD round (RED baseline → GREEN → refactor loops),
-  Rounds 1–6, with verbatim rationalizations and verdicts
-- `field-run-1.md` — the first real end-to-end orchestration: delegation log,
+- `records/results.md` — every TDD round (RED baseline → GREEN → refactor
+  loops), with verbatim rationalizations and verdicts
+- `records/field-run-1.md` — the first real end-to-end orchestration: delegation log,
   a genuine cross-vendor design disagreement resolved in one reconcile round,
   the blind reviewer catching a latent defect, and the friction list (F1–F3)
   that fed fixes back into the skill

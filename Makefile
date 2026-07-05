@@ -42,7 +42,7 @@ check:
 	@test -f commands/orchestrate.md
 	@for a in deep-reasoner fast-worker scout; do test -f "agents/$$a.md" || { echo "missing agents/$$a.md"; exit 1; }; done
 	@for s in A-trivial B-conflict C-recon; do test -f "tests/scenarios/$$s.md" || { echo "missing tests/scenarios/$$s.md"; exit 1; }; done
-	@test -f tests/RUNBOOK.md && test -f tests/results.md && test -f tests/README.md
+	@test -f tests/RUNBOOK.md && test -f tests/records/results.md && test -f tests/README.md
 	@grep -q "dispatch-prompt.md" skills/orchestrate/SKILL.md
 	@echo "== all checks passed =="
 

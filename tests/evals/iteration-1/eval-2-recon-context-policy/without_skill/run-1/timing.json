@@ -1,6 +1,0 @@
-{
-  "total_tokens": 42443,
-  "duration_ms": 141311,
-  "total_duration_seconds": 141.3,
-  "note": "decontaminated rerun — first attempt auto-triggered the globally installed skill and was discarded (see benchmark analyst notes)"
-}
