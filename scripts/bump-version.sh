@@ -20,8 +20,8 @@ import json, sys
 root, version = sys.argv[1], sys.argv[2]
 
 paths = {
-    f"{root}/.claude-plugin/plugin.json":      lambda d: d.__setitem__("version", version),
-    f"{root}/.claude-plugin/marketplace.json": lambda d: d["plugins"][0].__setitem__("version", version),
+    f"{root}/plugin/.claude-plugin/plugin.json": lambda d: d.__setitem__("version", version),
+    f"{root}/.claude-plugin/marketplace.json":   lambda d: d["plugins"][0].__setitem__("version", version),
 }
 for path, setter in paths.items():
     with open(path) as f:
@@ -32,7 +32,7 @@ for path, setter in paths.items():
         f.write("\n")
 
 # Verify both agree after the write
-v1 = json.load(open(f"{root}/.claude-plugin/plugin.json"))["version"]
+v1 = json.load(open(f"{root}/plugin/.claude-plugin/plugin.json"))["version"]
 v2 = json.load(open(f"{root}/.claude-plugin/marketplace.json"))["plugins"][0]["version"]
 assert v1 == v2 == version, f"post-write mismatch: {v1} vs {v2}"
 print(f"version -> {version} (both manifests)")

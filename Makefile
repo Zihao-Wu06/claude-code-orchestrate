@@ -2,7 +2,7 @@
 # `make check` is the single source of truth for repo health; CI runs it too.
 
 SHELL := /bin/bash
-SCRIPTS := install.sh skills/orchestrate/peer.sh $(wildcard scripts/*.sh)
+SCRIPTS := plugin/skills/orchestrate/peer.sh $(wildcard scripts/*.sh)
 
 .PHONY: help check install validate bump-version eval-view
 
@@ -24,8 +24,8 @@ check:
 		echo "shellcheck not installed — skipped locally (CI always runs it)"; \
 	fi
 	@echo "== plugin manifests =="
-	@jq empty .claude-plugin/plugin.json .claude-plugin/marketplace.json
-	@v1=$$(jq -r .version .claude-plugin/plugin.json); \
+	@jq empty plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json
+	@v1=$$(jq -r .version plugin/.claude-plugin/plugin.json); \
 	 v2=$$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json); \
 	 if [ "$$v1" != "$$v2" ]; then echo "version drift: plugin.json=$$v1 marketplace.json=$$v2"; exit 1; fi; \
 	 echo "version $$v1 (manifests agree)"
@@ -34,23 +34,24 @@ check:
 	  || ruby -ryaml -e "YAML.load_file('.github/workflows/ci.yml'); puts 'YAML OK'"
 	@echo "== file integrity =="
 	@test -f LICENSE && test -f CHANGELOG.md && test -f CONTRIBUTING.md
-	@test -f skills/orchestrate/SKILL.md
-	@test -f skills/orchestrate/dispatch-prompt.md
-	@test -f skills/orchestrate/patterns.md
-	@test -f skills/orchestrate/agent-TEMPLATE.md
-	@grep -q "patterns.md" skills/orchestrate/SKILL.md
-	@test -f commands/orchestrate.md
-	@for a in deep-reasoner fast-worker scout; do test -f "agents/$$a.md" || { echo "missing agents/$$a.md"; exit 1; }; done
+	@test -f plugin/skills/orchestrate/SKILL.md
+	@test -f plugin/skills/orchestrate/dispatch-prompt.md
+	@test -f plugin/skills/orchestrate/patterns.md
+	@test -f plugin/skills/orchestrate/agent-TEMPLATE.md
+	@grep -q "patterns.md" plugin/skills/orchestrate/SKILL.md
+	@test -f plugin/commands/orchestrate.md
+	@for a in deep-reasoner fast-worker scout; do test -f "plugin/agents/$$a.md" || { echo "missing plugin/agents/$$a.md"; exit 1; }; done
 	@for s in A-trivial B-conflict C-recon; do test -f "tests/scenarios/$$s.md" || { echo "missing tests/scenarios/$$s.md"; exit 1; }; done
 	@test -f tests/RUNBOOK.md && test -f tests/records/results.md && test -f tests/README.md
-	@grep -q "dispatch-prompt.md" skills/orchestrate/SKILL.md
+	@grep -q "dispatch-prompt.md" plugin/skills/orchestrate/SKILL.md
 	@echo "== all checks passed =="
 
 install:
-	./install.sh
+	./scripts/install.sh
 
 validate:
 	claude plugin validate . --strict
+	claude plugin validate ./plugin --strict
 
 bump-version:
 	@test -n "$(V)" || { echo "usage: make bump-version V=x.y.z"; exit 1; }

@@ -1,6 +1,6 @@
 # Test RUNBOOK — orchestrate skill
 
-Regression tests for `skills/orchestrate/SKILL.md`, following the superpowers
+Regression tests for `plugin/skills/orchestrate/SKILL.md`, following the superpowers
 `writing-skills` TDD methodology: every scenario must FAIL without the skill
 (baseline / RED) and PASS with it (GREEN). **Any edit to SKILL.md requires
 rerunning all three scenarios** — the iron law applies to edits, not just
@@ -34,7 +34,7 @@ built with the official skill-creator harness. To rerun after a skill edit:
      --skill-name orchestrate --benchmark .../benchmark.json --static .../review.html
    ```
 4. Trigger tests: `python3 -m scripts.run_eval --eval-set tests/evals/trigger-eval.json
-   --skill-path skills/orchestrate --runs-per-query 3 …` — use ≥3 reps
+   --skill-path plugin/skills/orchestrate --runs-per-query 3 …` — use ≥3 reps
    (1-rep trigger results are noise; proven in iteration-1) and read
    `evals/iteration-1/ANALYSIS.md` for how to interpret probe-environment
    recall vs real-environment triggering.
@@ -59,7 +59,7 @@ scenario as a one-shot subagent with a fresh context:
 
   ```
   You have loaded the following skill and must operate by it:
-  <full text of skills/orchestrate/SKILL.md>
+  <full text of plugin/skills/orchestrate/SKILL.md>
   ---
   ```
 

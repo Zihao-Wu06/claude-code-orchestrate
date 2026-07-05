@@ -5,8 +5,8 @@
 
 ## Skill-change gate (required)
 
-<!-- The behavioral files are: skills/orchestrate/SKILL.md,
-     skills/orchestrate/dispatch-prompt.md, agents/*.md.
+<!-- The behavioral files are: plugin/skills/orchestrate/SKILL.md,
+     plugin/skills/orchestrate/dispatch-prompt.md, plugin/agents/*.md.
      Editing ANY of them — including "just wording" — requires rerunning the
      behavior scenarios per tests/RUNBOOK.md before this PR is reviewable.
      Rounds 4–6 in tests/results.md were all reruns for exactly such edits. -->

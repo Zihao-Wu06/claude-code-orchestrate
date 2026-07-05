@@ -32,11 +32,11 @@ Two handles do the driving:
 
 Installed as a **plugin** (`claude plugin marketplace add Zihao-Wu06/claude-code-orchestrate` + `claude plugin install orchestrate@claude-code-orchestrate`): the three agents and the /orchestrate command register automatically — nothing to copy. `peer.sh` then lives next to this SKILL.md inside the plugin directory; resolve it relative to this file rather than the `~/.claude/skills` path used in the examples below.
 
-Installed **manually**: from the repo, `./install.sh` does all of this. By hand:
+Installed **manually**: from the repo, `make install` (runs `scripts/install.sh`) does all of this. By hand:
 
 ```bash
 mkdir -p ~/.claude/agents   # often missing; cp into a missing dir fails
-cp <repo>/agents/*.md ~/.claude/agents/          # deep-reasoner, fast-worker, scout
+cp <repo>/plugin/agents/*.md ~/.claude/agents/   # deep-reasoner, fast-worker, scout
 chmod +x ~/.claude/skills/orchestrate/peer.sh
 codex login status          # must say "Logged in" — otherwise: codex login
 ```

@@ -19,8 +19,9 @@ No runtime dependencies. Tooling used by `make check`: `bash`, `jq`,
 
 ## The testing iron law
 
-**Any edit to `skills/orchestrate/SKILL.md`, `skills/orchestrate/dispatch-prompt.md`,
-or `agents/*.md` requires rerunning the behavior scenarios before it ships.**
+**Any edit to `plugin/skills/orchestrate/SKILL.md`, `…/dispatch-prompt.md`,
+or `plugin/agents/*.md` requires rerunning the behavior scenarios before it
+ships.**
 No exceptions for "just wording", "just a path", or "obviously harmless" —
 Rounds 4–6 in `tests/records/results.md` were all reruns for exactly such edits.
 

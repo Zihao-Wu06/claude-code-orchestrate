@@ -144,6 +144,21 @@ SKILL.md custom-roster pointer updated. No rule changes.
 the local CLAUDE.md orchestration default (another session's local, untracked
 config) — it did not affect verdicts; behavior matched the skill in all three.
 
+## Round 9 — plugin/ nesting path updates, 2026-07-05
+
+Edit under test: the shippable plugin moved under `plugin/` (marketplace
+`source: "./plugin"`); SKILL.md Setup section repo paths updated
+(`<repo>/plugin/agents/`, `make install`). No rule changes. Subjects read
+the skill at its new path.
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo, Read→Edit, explicitly declines a disproportionate verification step) |
+| B — conflict | **PASS** (four-part brief, no fifth part; expands the terse side by asking that executor rather than inventing) |
+| C — recon (fallback) | **PASS** (scout-first with preamble, data-handoff exception, row-3 correctly ruled out on verifiability, file-handoff rule cited for the relay) |
+
+**Outcome: 3/3 PASS — repository re-layout is behavior-neutral.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

@@ -3,27 +3,27 @@
 # Idempotent: rerun after any change. CLAUDE_DIR overrides the target.
 set -euo pipefail
 
-SRC="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PLUGIN="$ROOT/plugin"
 CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
 
 mkdir -p "$CLAUDE_DIR/skills" "$CLAUDE_DIR/agents" "$CLAUDE_DIR/commands"
 
-# Skill directory (SKILL.md, peer.sh, agents/ reference copies)
+# Skill directory (SKILL.md, dispatch-prompt, patterns, peer.sh, template)
 rm -rf "$CLAUDE_DIR/skills/orchestrate"
-cp -R "$SRC/skills/orchestrate" "$CLAUDE_DIR/skills/orchestrate"
+cp -R "$PLUGIN/skills/orchestrate" "$CLAUDE_DIR/skills/orchestrate"
 chmod +x "$CLAUDE_DIR/skills/orchestrate/peer.sh"
 
-# Agent definitions — every role in the repo-root agents/ (plugin-standard
-# location; the authoring template lives in skills/orchestrate/agents/)
+# Agent definitions — every role in plugin/agents/ (plugin-standard location)
 installed_agents=""
-for f in "$SRC/agents/"*.md; do
+for f in "$PLUGIN/agents/"*.md; do
   base="$(basename "$f")"
   cp "$f" "$CLAUDE_DIR/agents/$base"
   installed_agents="$installed_agents ${base%.md}"
 done
 
 # Slash command
-cp "$SRC/commands/orchestrate.md" "$CLAUDE_DIR/commands/orchestrate.md"
+cp "$PLUGIN/commands/orchestrate.md" "$CLAUDE_DIR/commands/orchestrate.md"
 
 echo "Installed (manual mode; plugin users: claude plugin marketplace add Zihao-Wu06/claude-code-orchestrate):"
 echo "  skill   -> $CLAUDE_DIR/skills/orchestrate/"

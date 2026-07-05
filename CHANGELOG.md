@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Changed
+- The shippable plugin now lives entirely under `plugin/` (agents, commands,
+  skills, plugin manifest), mirroring upstream open-science-skills; the root
+  marketplace manifest points at `./plugin`. `install.sh` moved to
+  `scripts/install.sh` (`make install`). Root entries: 19 → 15.
 - GitHub tree slimmed: raw eval run data is no longer committed (regenerable;
   iteration-1 originals preserved in git history at `7767a0d`) — only
   benchmark summaries and ANALYSIS ship; narrative records moved to

@@ -2,10 +2,14 @@
 
 How the pieces of the `orchestrate` plugin fit together, and where each
 decision lives. The behavioral source of truth is always
-[skills/orchestrate/SKILL.md](../skills/orchestrate/SKILL.md) — this document
-is the map, not the law.
+[plugin/skills/orchestrate/SKILL.md](../plugin/skills/orchestrate/SKILL.md) —
+this document is the map, not the law.
 
-## Components
+Everything shippable lives under `plugin/` (the marketplace manifest at the
+repo root points its `source` there); everything else in the repo — docs,
+tests, vendor snapshot, scripts — is engineering around it.
+
+## Components (all paths under `plugin/`)
 
 ```
                        user
@@ -33,30 +37,32 @@ is the map, not the law.
 
 Supporting pieces:
 
-- `skills/orchestrate/patterns.md` — on-demand reference layer (the seven
-  mixing patterns and per-signal Codex explanations). Binding rules stay in
-  SKILL.md; this file loads only when composing multi-executor work —
+- `plugin/skills/orchestrate/patterns.md` — on-demand reference layer (the
+  seven mixing patterns and per-signal Codex explanations). Binding rules
+  stay in SKILL.md; this file loads only when composing multi-executor work —
   progressive disclosure, same mechanism as dispatch-prompt.md.
-- `skills/orchestrate/agent-TEMPLATE.md` — authoring template for custom
-  roles (used by the `custom` roster modifier). Deliberately kept *inside*
-  the skill directory so plugin auto-registration never picks it up as a
-  real agent.
-- `install.sh` — manual installer; `scripts/` — maintenance tooling.
+- `plugin/skills/orchestrate/agent-TEMPLATE.md` — authoring template for
+  custom roles (used by the `custom` roster modifier). Deliberately kept
+  *inside* the skill directory so plugin auto-registration never picks it up
+  as a real agent.
+- `scripts/install.sh` — manual installer (`make install`); `scripts/` —
+  maintenance tooling.
 
 ## Two install modes, one behavior
 
 | | Plugin install | Manual install |
 |---|---|---|
-| Command | `claude plugin marketplace add …` + `claude plugin install …` | `./install.sh` |
+| Command | `claude plugin marketplace add …` + `claude plugin install …` | `make install` |
 | Skill location | plugin cache dir | `~/.claude/skills/orchestrate/` |
-| Agents | auto-registered from repo-root `agents/` | copied to `~/.claude/agents/` |
+| Agents | auto-registered from `plugin/agents/` | copied to `~/.claude/agents/` |
 | `/orchestrate` | auto-registered | copied to `~/.claude/commands/` |
 | `peer.sh` path | resolve relative to SKILL.md | `~/.claude/skills/orchestrate/peer.sh` |
 
-The repo root doubles as both the plugin root and its own marketplace
-(`.claude-plugin/plugin.json` + `marketplace.json`) — the layout required by
-the official plugin spec, which is why `skills/`, `agents/`, and `commands/`
-must stay at the root.
+`plugin/` is the plugin root (`plugin/.claude-plugin/plugin.json`; `skills/`,
+`agents/`, `commands/` directly under it, as the official plugin spec
+requires). The repo root carries only the marketplace manifest
+(`.claude-plugin/marketplace.json`, `source: "./plugin"`) — the repo is its
+own marketplace, same layout as upstream open-science-skills.
 
 ## Load-bearing design decisions (index)
 

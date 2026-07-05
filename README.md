@@ -39,7 +39,7 @@ Skills, the `/orchestrate` command, and the three agents register automatically.
 **Manually:**
 
 ```bash
-./install.sh          # copies into ~/.claude/{skills,agents,commands}
+make install          # scripts/install.sh — copies into ~/.claude/{skills,agents,commands}
 ```
 
 Named subagents (`deep-reasoner`, `fast-worker`, `scout`) resolve after a
@@ -59,7 +59,7 @@ without it the Codex routing rows degrade gracefully (announced, skipped).
 - `thorough` — routes borderline work up to Opus, adds an adversarial falsify
   pass on high-stakes conclusions, doubles the reconcile budget.
 - `custom` — asks which installed agent roles to use for this run
-  (write your own with `skills/orchestrate/agent-TEMPLATE.md`).
+  (write your own with `plugin/skills/orchestrate/agent-TEMPLATE.md`).
 - No modifier — the standard routing table.
 
 Or just describe the job like a tech-lead brief: goal, context, constraints —
@@ -111,15 +111,16 @@ Added on top:
 ## Layout
 
 ```
-.claude-plugin/          plugin + marketplace manifests (repo is its own marketplace)
-skills/orchestrate/      the skill: SKILL.md, dispatch-prompt.md, patterns.md, peer.sh, agent-TEMPLATE.md
-agents/                  the three model-pinned agent definitions (plugin-standard location)
-commands/orchestrate.md  the /orchestrate slash command
+plugin/                  the shippable plugin, complete in one folder:
+  ├── .claude-plugin/      plugin manifest
+  ├── skills/orchestrate/  SKILL.md, dispatch-prompt.md, patterns.md, peer.sh, agent-TEMPLATE.md
+  ├── agents/              the three model-pinned agent definitions
+  └── commands/            the /orchestrate slash command
+.claude-plugin/          marketplace manifest (repo is its own marketplace → ./plugin)
 docs/                    architecture and design-decision index
 tests/                   fixtures, eval harness, and validation records (see tests/README.md)
 vendor/fable-orchestrate pristine upstream snapshot (see its PROVENANCE.md; do not edit)
-scripts/ + Makefile      maintenance tooling — `make check` is the repo health gate
-install.sh               manual user-wide installer (idempotent)
+scripts/ + Makefile      installer + maintenance tooling — `make check` is the health gate
 ```
 
 ## Documentation
