@@ -74,12 +74,13 @@ Your context is the scarcest resource in the loop. Rules, not vibes:
 
 - **Don't read to understand — dispatch scout.** If understanding or locating something needs more than ~100 lines read, that is scout's job; you consume the ≤20-line digest. Reading five files "to be thorough" is how orchestrators silently become the most expensive executor.
 - **Delegation prompts are self-contained.** The subagent has none of your conversation history: restate the goal, paste the relevant digest lines, name exact paths. A prompt that says "as discussed above" is a bug.
-- **Return contract on every delegation: conclusion + evidence, ≤ 20 lines,** anchored as `path:line` where applicable. Reject dumps; re-ask with the contract restated.
+- **Return contract on every delegation: conclusion + evidence, ≤ 20 lines,** anchored as `path:line` where applicable. Reject dumps; re-ask with the contract restated. One exception, keyed to a predicate: a recon inventory that feeds another executor (a data handoff) returns in full — see the recon template in dispatch-prompt.md — and you relay it without re-reading it.
 - **Slow work goes to the background** (`run_in_background: true`); keep planning, consume the final message on notification. Never read a subagent's transcript file — the final message IS the return value.
+- **Hand bulk over as files, not pasted text.** Inputs over ~20 lines enter a dispatch as a file path ("Read this first — it is your requirements"); implement-type executors write their full report to a file and return status + summary + path. Everything you paste into a dispatch stays resident in your context for the rest of the session.
 
 ### Delegate with a contract
 
-Every delegation carries this block (drop fields that are genuinely N/A, never the acceptance check):
+Compose every dispatch from the templates in [dispatch-prompt.md](dispatch-prompt.md) — skeleton, in order: role preamble (fallback/peer paths only) → scene-setting line → the contract → inputs handoff → before-you-begin clause → report contract. The contract core (drop fields that are genuinely N/A, never the acceptance check):
 
 ```
 Goal:             <one sentence — what done looks like>
@@ -90,16 +91,18 @@ Acceptance check: <objective check the result must pass — a command, a test, a
 Return format:    conclusion + evidence, ≤ 20 lines, path:line anchors
 ```
 
-Two equivalent spawn forms — both verified in this environment:
+Two spawn forms — same model pinning, **not** the same prompt burden:
 
-- **Named** (after Setup + session reload): `Agent(subagent_type: "deep-reasoner" | "fast-worker" | "scout", …)`. The model is pinned by the agent definition.
-- **No setup needed:** `Agent(subagent_type: "general-purpose", model: "opus" | "sonnet" | "haiku", …)` — same pinning, works immediately.
+- **Named** (after Setup + session reload): `Agent(subagent_type: "deep-reasoner" | "fast-worker" | "scout", …)` — pins the model AND carries the role's operating contract as its system prompt.
+- **Fallback:** `Agent(subagent_type: "general-purpose", model: "opus" | "sonnet" | "haiku", …)` — pins the model only; the executor is otherwise a bare generalist. **Prepend the role preamble from dispatch-prompt.md**, or it won't know its operating contract.
+
+**Report contract:** every executor's final message starts with a status — `DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED` — and stays within ~15–20 lines; implement-type detail goes to a report file whose path you set in the dispatch. Executors never silently deliver work they're unsure about.
 
 ### Escalation ladder — when an executor fails
 
-Retries on the same tier burn money without adding information. One ladder, strictly upward:
+Statuses drive the ladder. `NEEDS_CONTEXT` is **not** a failure — supply the missing context and re-dispatch the same tier. `BLOCKED`, or a missed acceptance check, counts. Retries on the same tier burn money without adding information. One ladder, strictly upward:
 
-1. **fast-worker misses the acceptance check twice** on the same task → stop; route the task to **deep-reasoner** with both failed attempts attached as evidence. No third mechanical retry.
+1. **fast-worker reports BLOCKED, or misses the acceptance check twice** on the same task → stop; route the task to **deep-reasoner** with both failed attempts attached as evidence. No third mechanical retry.
 2. **deep-reasoner circles the same framing for two rounds** (same fix restated, same architecture re-argued) → switch vendor: **Codex** on the same contract. A resample of the same distribution repeats the same confident error; a decorrelated prior breaks the fixation.
 3. **Codex and deep-reasoner both fail, or disagree unresolved** → escalate to the human with the four-part brief (see the parallel path below).
 
@@ -136,6 +139,8 @@ A returned "done" is a claim, not a fact. On fan-in:
 ```
 
 For the peer to edit files, use `--mode implement` (workspace-write) and point `-C` at the working directory. For a long turn, run it via the **Bash tool with `run_in_background: true`** plus `--out <file>`, then `Read` that file when the task-notification fires — a multi-minute peer turn never blocks you. `--effort low|medium|high|xhigh` sets the peer's reasoning depth (codex default: xhigh); only budget modes change it.
+
+**The peer has no system prompt at all** — every peer prompt must carry its own framing (the peer template in [dispatch-prompt.md](dispatch-prompt.md)): independent second opinion, assume no shared context, conclusion + evidence ≤ 20 lines. On the blind-parallel path, the task body sent to Opus and to the peer must be **verbatim identical** — only the framing/preamble differs by path.
 
 ### When to reach for Codex — the decorrelated peer
 

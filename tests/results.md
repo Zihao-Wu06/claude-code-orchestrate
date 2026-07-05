@@ -40,3 +40,28 @@ verified-by-failing-test scenario — flipped RED → GREEN on the first GREEN
 run. A and C confirm the added text does not degrade already-compliant
 behavior and that the new sections (cost policy, contract, verification,
 worktree) are actually picked up and applied.
+
+## Round 3 — dispatch-prompt layer edit, 2026-07-05 (skill + dispatch-prompt.md read by subject)
+
+Edit under test: new dispatch-prompt.md (skeleton, per-tier templates, status
+vocabulary, worked example), SKILL.md wiring (fallback-path role preamble
+requirement, status-driven ladder, file handoff, peer framing + verbatim
+blind-parallel rule), status bullet in all agent defs. Scenario C hardened
+for this round: named subagents declared unavailable (forces the fallback
+path) and the subject must write its first dispatch prompt verbatim.
+
+| Scenario | Verdict | Summary |
+|---|---|---|
+| A — trivial | **PASS** | Read → Edit, zero delegation, cites row 2; explicitly declines a post-edit verification read as context burn. |
+| B — conflict | **PASS** | Four-part brief, "no default pick, no recommendation, no lean"; symmetric-depth presentation ("symmetric length, not symmetric confidence"). |
+| C — recon (hardened) | **PASS** | Fallback path handled correctly: scout role preamble prepended verbatim, scene-setting line, six-field contract, status vocabulary first, judgment bounced ("requires reasoning — route to deep-reasoner"). One finding → refactor below. |
+
+**REFACTOR finding (C):** the subject sensibly let a data-handoff inventory
+exceed the ≤20-line return cap — correct behavior, but the skill didn't
+license it, so a stricter subject might truncate an inventory to fit the cap
+(silent data loss). Fix: data-handoff exception added as an observable-predicate
+conditional (dispatch-prompt.md recon template + cost-policy line).
+
+**Round 3b — scenario C rerun after fix: PASS.** Subject explicitly invoked
+the new exception ("This is a data-handoff recon feeding another executor…
+caps do not apply here") and kept the rest of the skeleton intact.
