@@ -53,7 +53,7 @@ while [ $# -gt 0 ]; do
     --prompt)      PROMPT="${2:?}"; PROMPT_SET=1; shift 2 ;;
     --prompt-file) PROMPT="$(cat "${2:?}")"; PROMPT_SET=1; shift 2 ;;
     -)             PROMPT="$(cat)"; PROMPT_SET=1; shift ;;
-    -h|--help)     sed -n '2,41p' "$0"; exit 0 ;;
+    -h|--help)     awk 'NR>1 && !/^#/{exit} NR>1{sub(/^# ?/,""); print}' "$0"; exit 0 ;;
     *)             die "unknown arg: $1 (see --help)" ;;
   esac
 done
