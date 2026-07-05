@@ -44,9 +44,11 @@ make install          # scripts/install.sh — copies into ~/.claude/{skills,age
 
 Named subagents (`deep-reasoner`, `fast-worker`, `scout`) resolve after a
 session reload; until then `Agent(subagent_type: "general-purpose", model: …)`
-gives identical pinning. The Codex peer additionally needs the
-[Codex CLI](https://github.com/openai/codex) installed and `codex login` done —
-without it the Codex routing rows degrade gracefully (announced, skipped).
+gives identical pinning. The Codex peer is **optional**: it needs the
+[Codex CLI](https://github.com/openai/codex) installed and `codex login` done,
+and can be switched off entirely with `peer.sh --off` (`--on` re-enables) —
+when absent or off, the Codex routing rows degrade gracefully (announced,
+skipped).
 
 ## Use
 

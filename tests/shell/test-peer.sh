@@ -72,4 +72,29 @@ for args in "--mode bogus --prompt X" "--effort ultra --prompt X" "--backend gem
 done
 pass "invalid mode/effort/backend/missing-prompt all exit 2"
 
+# 7. the persistent on/off switch (CLAUDE_DIR-scoped marker; exit 3 when off)
+cat > "$TMP/bin/codex" <<'MOCK'
+#!/usr/bin/env bash
+echo "BACKEND_RAN"
+MOCK
+chmod +x "$TMP/bin/codex"
+export CLAUDE_DIR="$TMP/claude-home"
+out="$(CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --off)"
+grep -q "disabled" <<<"$out" || fail "--off did not report disabled"
+test -f "$CLAUDE_DIR/orchestrate.peer-off" || fail "--off did not create the marker"
+rc=0; out="$(CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --mode consult -C "$TMP" --prompt "X" 2>&1)" || rc=$?
+[ "$rc" -eq 3 ] || fail "disabled run exited $rc, expected 3"
+grep -q "BACKEND_RAN" <<<"$out" && fail "backend ran while disabled"
+grep -q "peer.sh --on" <<<"$out" || fail "disabled message lacks the re-enable hint"
+st="$(CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --status)"   # capture, THEN grep — grep -q on a
+grep -q "disabled" <<<"$st" || fail "--status missed disabled state"   # pipe SIGPIPEs the writer
+CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --on > /dev/null
+test ! -f "$CLAUDE_DIR/orchestrate.peer-off" || fail "--on did not remove the marker"
+out="$(CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --mode consult -C "$TMP" --prompt "X")"
+grep -q "BACKEND_RAN" <<<"$out" || fail "backend did not run after --on"
+st="$(CLAUDE_DIR="$CLAUDE_DIR" "$PEER" --status)"
+grep -q "enabled" <<<"$st" || fail "--status missed enabled state"
+unset CLAUDE_DIR
+pass "persistent switch: --off blocks (exit 3, hint shown), --on restores, --status reports"
+
 echo "peer.sh mock smoke: all tests passed"

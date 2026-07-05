@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- The Codex peer is now explicitly optional: `peer.sh --off | --on | --status`
+  persistent switch (marker outside the skill dir, survives updates; disabled
+  runs refuse with exit 3). While off, the skill announces the skip and the
+  high-stakes path falls back to its cheap-mode single-executor form.
 - CI now smoke-tests the manual install path on Linux **and macOS**
   (`make smoke-install`: placement, idempotence, stale-agent cleanup — the
   macOS job is the first CI coverage of peer.sh's bash-3.2/watchdog branch),

@@ -64,6 +64,10 @@ Expected: you're asked which installed roles to use (e.g. swap in your own
 
 ## When things look wrong
 
+- **Don't want Codex used at all?** It's optional: `peer.sh --off` switches
+  the peer off persistently (`--on` re-enables, `--status` shows state) —
+  orchestrations then run Claude-only, with the skip announced and the
+  high-stakes path falling back to single-executor + independent review.
 - **"peer degraded: codex CLI not on PATH / run codex login"** — the Codex
   routing rows are skipped (announced, everything else works). Install the
   [Codex CLI](https://github.com/openai/codex) and `codex login` to enable
