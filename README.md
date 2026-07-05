@@ -15,6 +15,22 @@ model-pinned executors:
 | scout | Haiku, read-only | locating code, mapping structure, summarizing state |
 | peer (Codex) | GPT-5, different vendor | fresh perspectives, disputed designs, parallel cross-checks |
 
+## Contents
+
+- [Install](#install)
+- [Usage](#usage)
+  - [Quick start](#quick-start)
+  - [The `/orchestrate` command](#the-orchestrate-command)
+  - [Modifiers](#modifiers)
+  - [Budget modes](#budget-modes)
+  - [The custom roster](#the-custom-roster)
+  - [What you get back](#what-you-get-back)
+  - [The Codex peer](#the-codex-peer-optional)
+  - [Maintenance](#maintenance)
+- [Features](#features)
+- [Design and evaluation](#design-and-evaluation)
+- [Layout](#layout) · [Documentation](#documentation) · [License](#license)
+
 ## License
 
 [CC BY-NC 4.0](LICENSE) — noncommercial use, attribution required.
@@ -42,31 +58,128 @@ gives identical pinning. The Codex peer is **optional** — its on/off switch an
 its unreachable-auto-off behavior are covered in
 [The Codex peer](#the-codex-peer-optional) below.
 
-## Use
+## Usage
+
+Two ways in — a slash command, or plain English:
 
 ```
 /orchestrate [economic|thorough] [custom] <task…>
 ```
 
-- `economic` — thrift mode: skips the cross-vendor double-check (always
-  announced) and leans on the cheaper executors.
-- `thorough` — rigor mode: leans on Opus and adds adversarial verification.
-- `custom` — pick which installed agent **roles** *and* which installed
-  **skills** to use this run. Roles slot into a tier; a selected skill is
-  injected into the matching dispatch as its operating procedure (announced,
-  never broadcast). Author a role with
-  `plugin/skills/orchestrate/agent-TEMPLATE.md`.
-- No modifier — the standard routing table. Exact semantics live in one place:
-  SKILL.md's **Budget modes** and **Custom roster** sections.
+or just describe the job like a brief to a tech lead (goal, context,
+constraints); the skill auto-activates on orchestration-shaped requests.
+`/orchestrate` is the reliable entry point — the auto-trigger is best-effort.
 
-Or just describe the job like a tech-lead brief: goal, context, constraints —
-and ask it to show the plan first.
+### Quick start
 
-Full operator's reference — every modifier's effect, what the output looks
-like, the `peer.sh` on/off switch and flags, and the `make` targets — is in
-[docs/USAGE.md](docs/USAGE.md).
+```
+/orchestrate Users report expenses dated the 1st get double-counted in the
+monthly report. Fix it, extract the report logic into its own module, and add
+tests. Repo: ~/work/expense-tracker.
+```
 
-## The Codex peer (optional)
+The orchestrator **shows its plan first** — the decomposition and the tier
+each piece routes to — then executes: scout maps the module → deep-reasoner
+root-causes → fast-worker implements with a regression test → the build and a
+blind reviewer verify. You read concise conclusions, never file dumps.
+
+### The `/orchestrate` command
+
+The command makes the session model a **thin orchestrator**: it plans and
+reconciles but does not do the heavy lifting, routing each unit of work to the
+cheapest capable executor. Routing is **first-match, top to bottom**:
+
+| The task is… | Routes to |
+|---|---|
+| planning / synthesis, or a trivial one-liner | **the orchestrator itself** (delegating would cost more) |
+| locate / map / inventory existing code | **scout** — Haiku, read-only |
+| mechanical **and** fully specified (success is objectively checkable) | **fast-worker** — Sonnet |
+| architecture / hard debugging / design / hard trade-off | **deep-reasoner** — Opus |
+| high blast radius **and** hard to verify (both) | **deep-reasoner + Codex, blind & parallel** → orchestrator reconciles |
+| novel problem, suspected blind spot, or you're looping | **Codex** peer |
+
+You always see the plan before any delegation. If a large task *doesn't*
+delegate, that's a bug — file it with the printed plan.
+
+### Modifiers
+
+Modifiers go before the task, in any order, and combine
+(`/orchestrate economic custom …`):
+
+| Modifier | What it does | Example |
+|---|---|---|
+| *(none)* | Standard routing. The blind cross-check fires only when a decision is both high-blast-radius and unverifiable. | `/orchestrate Add a --json flag to the export command and cover it with tests.` |
+| `economic` | **Thrift mode** — routes borderline work down to Sonnet, disables the cross-vendor double-check (announced), runs the peer at `--effort medium`. Verification is never cut. | `/orchestrate economic Rename getUserByID to fetchUser across the repo; keep tests green.` |
+| `thorough` | **Rigor mode** — routes borderline work up to Opus, allows two reconcile rounds, adds an adversarial *falsify* pass, and always adds a reviewer to implement work. | `/orchestrate thorough Design the shared log schema before migrating 40 services.` |
+| `custom` | Pick which installed **roles** and **skills** to use this run (see [The custom roster](#the-custom-roster)). | `/orchestrate custom Audit the payment-v2 diff for security issues, then fix them.` |
+
+### Budget modes
+
+`economic` / default / `thorough` change **who** gets the work and **how much
+verification runs** — never how hard any executor thinks. Every skip is
+announced in the plan *and* the conclusion, so a thinned-out answer never
+passes silently.
+
+| Lever | `economic` | default | `thorough` |
+|---|---|---|---|
+| Blind parallel cross-check | **off** — deep-reasoner solo + Sonnet review + "human sign-off recommended" | fires on high-stakes **and** unverifiable | fires; 2 reconcile rounds before escalating |
+| Borderline task (reasoning vs. mechanical) | routes **down** to Sonnet | judgment call | routes **up** to Opus |
+| Codex signals | only "you're looping" | all seven | all seven + an adversarial falsify pass |
+| Verification stage | **never cut** (reviewer pinned to Sonnet) | cheap check, else a reviewer | tests **and** a reviewer, always |
+| Peer reasoning depth | `--effort medium` | default (`xhigh`) | `xhigh` |
+
+**Thinking depth is not a budget lever.** The savings come from routing
+borderline work down and cutting the redundant second channel — both
+auditable, both announced — never from hobbling an executor.
+
+### The custom roster
+
+`custom` (or asking mid-run) lets you shape the roster *before* planning. It
+takes two kinds of injectable — **roles** (who executes) and **skills** (how a
+domain is worked):
+
+1. The orchestrator enumerates the installed **roles** (agent types) and
+   **skills** (reading only their frontmatter — never a body) and asks
+   (multi-select) which to use this run.
+2. A selected **role** slots into a tier — recon / mechanical / reasoning /
+   peer — by its description and inherits that tier's rules. The routing table
+   itself never changes; a role must pin a model to be admitted.
+3. A selected **skill** is injected into the *matching* dispatch as its
+   operating procedure — the executor whose task falls in the skill's domain
+   is told *"Read this first — it is your operating procedure; follow it:
+   `<path>/SKILL.md`."* Non-matching dispatches don't carry it, the
+   orchestrator never reads the body, and every injection — or a selected
+   skill that matched nothing — is announced.
+
+**Author your own role:** copy `plugin/skills/orchestrate/agent-TEMPLATE.md`
+to `~/.claude/agents/<name>.md`, fill the frontmatter (a `model:` pin is
+**required**), pick a tier, and reload the session so the name resolves.
+
+```
+/orchestrate custom Review the payment-v2 diff for security issues, then fix them.
+→ you select your `security-reviewer` role + an installed `sec-audit` skill
+→ the audit dispatch runs security-reviewer, told to follow sec-audit as its
+  procedure; the fix dispatch runs fast-worker with no skill attached (announced).
+```
+
+### What you get back
+
+- **Plan first** — the decomposition and the tier for each piece, before any
+  delegation.
+- **Status tokens** — each executor's result opens with `DONE`,
+  `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, or `BLOCKED`. The orchestrator acts on
+  the token: supplies context and retries on `NEEDS_CONTEXT`, climbs the
+  escalation ladder on `BLOCKED`.
+- **A decision brief instead of an answer** — when two blind models disagree
+  after one reconcile round on a high-stakes call, you get four parts: the
+  decision and why it went parallel, both positions at equal depth, the crux
+  facts that would settle it, and the questions for you — with **no
+  recommendation**. That is the designed outcome; the tie-breaking facts
+  (roadmap, compliance, budget) are yours, not the models'.
+- **Announcements** — in `economic` mode every skipped cross-check is stated in
+  the plan and again in the conclusion.
+
+### The Codex peer (optional)
 
 The cross-vendor peer runs through the
 [Codex CLI](https://github.com/openai/codex) — install it and run `codex login`
@@ -95,6 +208,32 @@ fallback, with no command to run. Unlike `--off`, this is automatic and
 *transient*: nothing is persisted, so the peer resumes the instant Codex is
 reachable again. `peer.sh --status` reports both signals — whether the switch
 is on and whether the Codex CLI is on `PATH`.
+
+The skill drives the peer automatically; to consult it directly:
+
+```bash
+# consult (default) — read-only: ask for a second approach or an independent check
+peer.sh --mode consult -C "$PWD" --prompt "Will this sharding key hot-spot?"
+
+# implement — workspace-write: let the peer edit files under -C
+peer.sh --mode implement -C ./service --prompt "Apply the fix we discussed."
+```
+
+Every flag and its default (`--backend`, `--effort`, `--timeout`, `--out`, …)
+is in [docs/USAGE.md](docs/USAGE.md).
+
+### Maintenance
+
+| Command | Effect |
+|---|---|
+| `make install` | install/refresh the skill, agents, and `/orchestrate` into `~/.claude` (self-checks placement, cleans up renamed agents) |
+| `make check` | the health gate — shell syntax, shellcheck, manifest + version drift, CI YAML, file integrity, markdown links, and the `peer.sh` mock test |
+| `make smoke-install` | install into a throwaway dir and assert placement, idempotence, and stale-agent cleanup |
+| `make validate` | validate both plugin manifests against the official schema |
+| `make bump-version V=x.y.z` | set the version in both manifests atomically |
+
+Even more detail — every `peer.sh` flag and default, the full output shapes,
+and troubleshooting — lives in [docs/USAGE.md](docs/USAGE.md).
 
 ## Features
 
