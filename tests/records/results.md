@@ -159,6 +159,22 @@ the skill at its new path.
 
 **Outcome: 3/3 PASS — repository re-layout is behavior-neutral.**
 
+## Round 10 — peer on/off switch wiring, 2026-07-05
+
+Edit under test: the peer is now explicitly optional — `peer.sh --off/--on/
+--status` hard switch (marker outside the skill dir; disabled runs exit 3);
+SKILL.md Setup extends the degradation sentence (switched-off = same
+announced-skip path, row-3 falls back to its cheap-mode form) and
+Troubleshooting gains the exit-3 entry. Routing rules unchanged.
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo; correctly notes the status vocabulary is for executors, not for second-guessing complete instructions) |
+| B — conflict | **PASS** (four-part brief, no fifth part; distinguishes executor *failure* — ladder territory — from stable substantive disagreement) |
+| C — recon (fallback) | **PASS** (scout-first; builds the row-3-vs-row-6 deciding fact — session test coverage — into recon item 6 instead of discovering it after mis-routing) |
+
+**Outcome: 3/3 PASS — the optionality wiring causes no behavioral drift.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

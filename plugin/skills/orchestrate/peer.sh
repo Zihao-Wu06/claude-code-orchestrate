@@ -26,7 +26,13 @@
 #   peer.sh [--backend NAME] [--mode consult|implement] [-C DIR]
 #           [--effort low|medium|high|xhigh] [--timeout SEC] [--out FILE]
 #           (--prompt TEXT | --prompt-file PATH | -)
+#   peer.sh --on | --off | --status
 #
+#   --on / --off    persistent switch: enable/disable the peer entirely.
+#                   Marker file: $CLAUDE_DIR/orchestrate.peer-off (outside the
+#                   plugin/skill dir on purpose — survives updates/reinstalls).
+#                   While off, consult/implement refuse with exit code 3.
+#   --status        print enabled/disabled and whether the codex CLI is on PATH
 #   --backend NAME  vendor CLI to use (default: codex)
 #   --mode MODE     consult = read-only sandbox; implement = workspace-write
 #   -C DIR          working dir the peer sees (default: $PWD)
@@ -39,11 +45,22 @@
 set -euo pipefail
 
 BACKEND="codex"; MODE="consult"; DIR="$PWD"; EFFORT=""; TIMEOUT=600; OUT=""; PROMPT=""; PROMPT_SET=0
+STATE="${CLAUDE_DIR:-$HOME/.claude}/orchestrate.peer-off"
 
 die(){ echo "peer: $*" >&2; exit 2; }
 
+peer_status(){
+  if [ -f "$STATE" ]; then echo "peer: disabled ($STATE — 'peer.sh --on' to enable)";
+  else echo "peer: enabled"; fi
+  if command -v codex >/dev/null 2>&1; then echo "backend codex: on PATH";
+  else echo "backend codex: NOT on PATH"; fi
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
+    --on)          rm -f "$STATE"; echo "peer: enabled"; exit 0 ;;
+    --off)         mkdir -p "$(dirname "$STATE")"; : > "$STATE"; echo "peer: disabled ($STATE)"; exit 0 ;;
+    --status)      peer_status; exit 0 ;;
     --backend)     BACKEND="${2:?}"; shift 2 ;;
     --mode)        MODE="${2:?}"; shift 2 ;;
     -C|--dir)      DIR="${2:?}"; shift 2 ;;
@@ -61,6 +78,13 @@ done
 [ "$PROMPT_SET" = 1 ] || die "no prompt (use --prompt, --prompt-file, or -)"
 [ -n "$PROMPT" ] || die "empty prompt"
 [ -d "$DIR" ] || die "no such dir: $DIR"
+
+# Hard enforcement of the persistent switch: exit 3 (distinct from usage
+# errors) so callers can tell "disabled by choice" from "called wrong".
+if [ -f "$STATE" ]; then
+  echo "peer: disabled by $STATE — run 'peer.sh --on' to re-enable" >&2
+  exit 3
+fi
 
 case "$MODE" in
   consult|implement) : ;;
