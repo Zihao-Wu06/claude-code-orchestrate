@@ -8,10 +8,8 @@
 set -euo pipefail
 
 VERSION="${1:-}"
-case "$VERSION" in
-  [0-9]*.[0-9]*.[0-9]*) : ;;
-  *) echo "usage: bump-version.sh x.y.z (got: '${VERSION}')" >&2; exit 2 ;;
-esac
+[[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] \
+  || { echo "usage: bump-version.sh x.y.z (got: '${VERSION}')" >&2; exit 2; }
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 

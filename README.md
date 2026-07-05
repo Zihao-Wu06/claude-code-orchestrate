@@ -54,13 +54,13 @@ without it the Codex routing rows degrade gracefully (announced, skipped).
 /orchestrate [cheap|thorough] [custom] <task…>
 ```
 
-- `cheap` — never runs the two-model parallel cross-check (announces the skip),
-  routes borderline work down to Sonnet first, calls the peer at `--effort medium`.
-- `thorough` — routes borderline work up to Opus, adds an adversarial falsify
-  pass on high-stakes conclusions, doubles the reconcile budget.
-- `custom` — asks which installed agent roles to use for this run
+- `cheap` — thrift mode: skips the cross-vendor double-check (always announced)
+  and leans on the cheaper executors.
+- `thorough` — rigor mode: leans on Opus and adds adversarial verification.
+- `custom` — pick which installed agent roles to use this run
   (write your own with `plugin/skills/orchestrate/agent-TEMPLATE.md`).
-- No modifier — the standard routing table.
+- No modifier — the standard routing table. Exact semantics live in one place:
+  SKILL.md's **Budget modes** and **Custom roster** sections.
 
 Or just describe the job like a tech-lead brief: goal, context, constraints —
 and ask it to show the plan first.

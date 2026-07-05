@@ -48,33 +48,33 @@ eval-view` for the exact invocation).
 
 ## Fallback: the manual three-scenario procedure (original method)
 
-## How to run
-
 Each scenario file in `scenarios/` contains a `## PROMPT` section. Run each
 scenario as a one-shot subagent with a fresh context:
 
 - **Baseline (RED):** `Agent(subagent_type: "general-purpose", model: "sonnet",
   prompt: <PROMPT text verbatim>)`
-- **With skill (GREEN):** same call, but prepend to the prompt:
+- **With skill (GREEN):** same call, but the prompt opens with:
 
   ```
-  You have loaded the following skill and must operate by it:
-  <full text of plugin/skills/orchestrate/SKILL.md>
-  ---
+  You have loaded a skill that governs your behavior. First, Read
+  plugin/skills/orchestrate/SKILL.md in full, and also Read
+  plugin/skills/orchestrate/dispatch-prompt.md — they are the skill —
+  and operate strictly by them for the rest of this task.
   ```
 
-  (In practice recent rounds instruct the subject to Read SKILL.md +
-  dispatch-prompt.md. `patterns.md` is an on-demand reference layer and is
-  **deliberately excluded** from the GREEN read set — compliance must hold
-  from SKILL.md + dispatch-prompt.md alone; if a scenario fails on content
-  that was moved to patterns.md, that content was load-bearing and must move
-  back into SKILL.md.)
+  (This Read-based form is what every recorded round used; if the subject
+  has no file access, prepend the two files' full text instead.
+  `patterns.md` is an on-demand reference layer and is **deliberately
+  excluded** from the GREEN read set — compliance must hold from SKILL.md +
+  dispatch-prompt.md alone; if a scenario fails on content that was moved to
+  patterns.md, that content was load-bearing and must move back into
+  SKILL.md.)
 
 Run the three scenarios in parallel (one message, three Agent calls). The
 subagent is asked to *describe* its exact next tool calls, not execute them —
 we are grading the routing decision, not the work.
 
-## Grading
+### Grading
 
 Grade only against the PASS/FAIL criteria in each scenario file. Read the
 full response; record verbatim the sentences where the agent justifies its
@@ -82,7 +82,7 @@ choice (these are the rationalizations that skill wording must counter).
 Record every run in `records/results.md` with: date, scenario, arm
 (baseline/skill), PASS/FAIL, and the verbatim justification.
 
-## Known limitations
+### Known limitations
 
 - Test subjects run on Sonnet, not Fable — we are testing whether the skill
   *wording* binds a competent orchestrator model; stronger models comply at
