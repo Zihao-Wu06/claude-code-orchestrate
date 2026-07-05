@@ -11,27 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Shell syntax
-        run: bash -n install.sh skills/orchestrate/peer.sh
+      - name: Install tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck jq
 
-      - name: Shellcheck
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
-          shellcheck -S warning install.sh skills/orchestrate/peer.sh
-
-      - name: Plugin manifests parse
-        run: |
-          jq empty .claude-plugin/plugin.json
-          jq empty .claude-plugin/marketplace.json
-
-      - name: File integrity
-        run: |
-          test -f LICENSE
-          test -f skills/orchestrate/SKILL.md
-          test -f skills/orchestrate/dispatch-prompt.md
-          test -f commands/orchestrate.md
-          for a in deep-reasoner fast-worker scout; do test -f "agents/$a.md"; done
-          test -f skills/orchestrate/agents/TEMPLATE.md
-          for s in A-trivial B-conflict C-recon; do test -f "tests/scenarios/$s.md"; done
-          test -f tests/RUNBOOK.md && test -f tests/results.md
-          grep -q "dispatch-prompt.md" skills/orchestrate/SKILL.md
+      - name: make check
+        run: make check
