@@ -12,3 +12,14 @@ __pycache__/
 
 # One-off eval scratch subset (regenerated on demand, not a deliverable)
 tests/evals/trigger-eval-positives.json
+
+# Generated eval viewer (regenerate via generate_review.py --static; see tests/RUNBOOK.md)
+tests/evals/**/review.html
+
+# Local cross-tool workflow config (same class as CLAUDE.md/.claude/): never committed
+AGENTS.md
+.codex/
+
+# Raw eval run data (regenerable; full originals preserved in git history @7767a0d)
+tests/evals/iteration-1/eval-*/
+tests/evals/**/trigger-results*.json

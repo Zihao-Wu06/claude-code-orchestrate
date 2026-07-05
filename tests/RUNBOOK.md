@@ -1,6 +1,6 @@
 # Test RUNBOOK — orchestrate skill
 
-Regression tests for `skills/orchestrate/SKILL.md`, following the superpowers
+Regression tests for `plugin/skills/orchestrate/SKILL.md`, following the superpowers
 `writing-skills` TDD methodology: every scenario must FAIL without the skill
 (baseline / RED) and PASS with it (GREEN). **Any edit to SKILL.md requires
 rerunning all three scenarios** — the iron law applies to edits, not just
@@ -18,6 +18,9 @@ built with the official skill-creator harness. To rerun after a skill edit:
    dispatch-prompt.md first" preamble; each run writes `answer.md` into
    `evals/iteration-N/eval-<id>-<name>/<config>/run-1/outputs/` and its
    notification's tokens/duration go into `timing.json` beside it.
+   (These raw run trees stay local — they are gitignored; only
+   `benchmark.{json,md}` and `ANALYSIS.md` are committed. Iteration-1's
+   originals live in git history at `7767a0d`.)
    **Baseline caveat (learned the hard way):** if the skill is installed in
    `~/.claude/skills/`, park it elsewhere for the baseline runs — installed
    skills auto-trigger and contaminate the without_skill arm.
@@ -31,15 +34,17 @@ built with the official skill-creator harness. To rerun after a skill edit:
      --skill-name orchestrate --benchmark .../benchmark.json --static .../review.html
    ```
 4. Trigger tests: `python3 -m scripts.run_eval --eval-set tests/evals/trigger-eval.json
-   --skill-path skills/orchestrate --runs-per-query 3 …` — use ≥3 reps
+   --skill-path plugin/skills/orchestrate --runs-per-query 3 …` — use ≥3 reps
    (1-rep trigger results are noise; proven in iteration-1) and read
    `evals/iteration-1/ANALYSIS.md` for how to interpret probe-environment
    recall vs real-environment triggering.
 
 Iteration-1 results: with_skill 100% vs baseline 58.3% (delta +0.42);
 full numbers in `evals/iteration-1/benchmark.md`, caveats in
-`evals/iteration-1/ANALYSIS.md`, browsable run-by-run in
-`evals/iteration-1/review.html`.
+`evals/iteration-1/ANALYSIS.md`. The browsable run-by-run viewer
+(`review.html`) is a generated artifact and is NOT committed — regenerate it
+with the `generate_review.py --static` command from step 3 (or `make
+eval-view` for the exact invocation).
 
 ## Fallback: the manual three-scenario procedure (original method)
 
@@ -54,9 +59,16 @@ scenario as a one-shot subagent with a fresh context:
 
   ```
   You have loaded the following skill and must operate by it:
-  <full text of skills/orchestrate/SKILL.md>
+  <full text of plugin/skills/orchestrate/SKILL.md>
   ---
   ```
+
+  (In practice recent rounds instruct the subject to Read SKILL.md +
+  dispatch-prompt.md. `patterns.md` is an on-demand reference layer and is
+  **deliberately excluded** from the GREEN read set — compliance must hold
+  from SKILL.md + dispatch-prompt.md alone; if a scenario fails on content
+  that was moved to patterns.md, that content was load-bearing and must move
+  back into SKILL.md.)
 
 Run the three scenarios in parallel (one message, three Agent calls). The
 subagent is asked to *describe* its exact next tool calls, not execute them —
@@ -67,8 +79,8 @@ we are grading the routing decision, not the work.
 Grade only against the PASS/FAIL criteria in each scenario file. Read the
 full response; record verbatim the sentences where the agent justifies its
 choice (these are the rationalizations that skill wording must counter).
-Record every run in `results.md` with: date, scenario, arm (baseline/skill),
-PASS/FAIL, and the verbatim justification.
+Record every run in `records/results.md` with: date, scenario, arm
+(baseline/skill), PASS/FAIL, and the verbatim justification.
 
 ## Known limitations
 

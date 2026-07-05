@@ -33,7 +33,7 @@ the skill loads once and amortizes across the whole task; and the savings the
 skill actually targets — the orchestrator's own context over a long
 multi-file task — are not measurable in a single-turn decision-trace eval.
 These evals measure rule compliance, not end-to-end cost. See
-tests/field-run-1.md for in-vivo behavior.
+tests/records/field-run-1.md for in-vivo behavior.
 
 ## Incident: baseline contamination (methodology note)
 
@@ -69,6 +69,7 @@ positive triggering evidence under real conditions.
 - Single rep per arm (by design, cost cap). Marginal-looking results should
   be rerun 2-3× before concluding — none were marginal this round.
 - Grader = the session orchestrator reading full outputs (not blind). The
-  assertions are quoted-evidence-backed and checkable by any reader from the
-  saved answer.md files; a fully independent grader pass is a future-work
-  upgrade.
+  assertions are quoted-evidence-backed; the raw answer.md/grading.json run
+  trees are no longer committed (regenerable; iteration-1 originals preserved
+  verbatim in git history at commit `7767a0d`). A fully independent grader
+  pass is a future-work upgrade.
