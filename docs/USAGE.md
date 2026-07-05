@@ -64,6 +64,10 @@ Expected: you're asked which installed roles to use (e.g. swap in your own
 
 ## When things look wrong
 
+- **Don't want Codex used at all?** It's optional: `peer.sh --off` switches
+  the peer off persistently (`--on` re-enables, `--status` shows state) —
+  orchestrations then run Claude-only, with the skip announced and the
+  high-stakes path falling back to single-executor + independent review.
 - **"peer degraded: codex CLI not on PATH / run codex login"** — the Codex
   routing rows are skipped (announced, everything else works). Install the
   [Codex CLI](https://github.com/openai/codex) and `codex login` to enable
@@ -76,6 +80,11 @@ Expected: you're asked which installed roles to use (e.g. swap in your own
   answer** — that's by design, not a failure: after a blind parallel run and
   one reconcile round, genuine disagreement escalates to you with the crux
   facts only you hold (see SKILL.md, the high-stakes parallel path).
+- **Running the orchestrator itself as a subagent (nested)?** Dispatch your
+  executors in the foreground — background-subagent completion notifications
+  are not reliably delivered one nesting level down, so a background wait can
+  hang forever (live-eval finding F-LIVE-1). The skill's background guidance
+  assumes a top-level session.
 - **Everything routed to the orchestrator itself** — trivial single-step
   tasks are *supposed* to skip delegation (routing row 2); if a big task did
   this, file a bug with the plan it printed.

@@ -45,7 +45,8 @@ follow the full RED-GREEN loop: add or harden a scenario that fails first.
 ## Versioning & releases
 
 - `make bump-version V=x.y.z` updates both manifests
-  (`.claude-plugin/plugin.json` + `marketplace.json`) atomically — never edit
+  (`plugin/.claude-plugin/plugin.json` + root `.claude-plugin/marketplace.json`)
+  atomically — never edit
   version numbers by hand (two-file drift is the failure mode)
 - Add a `CHANGELOG.md` entry under the new version heading in the same PR
 

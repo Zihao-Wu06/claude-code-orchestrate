@@ -41,7 +41,7 @@ chmod +x ~/.claude/skills/orchestrate/peer.sh
 codex login status          # must say "Logged in" — otherwise: codex login
 ```
 
-If the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), everything else works.
+The peer is **optional, with a hard switch**: `peer.sh --off` disables it persistently (`--on` re-enables, `--status` reports; while off, peer calls refuse with exit 3 — the marker lives at `~/.claude/orchestrate.peer-off`, outside the skill dir, so it survives updates). If the peer is switched off, or the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), and a row-3 hit falls back to its cheap-mode form (deep-reasoner solo + independent review + human-sign-off note). Everything else works.
 
 ## Invocation modifiers
 
@@ -220,3 +220,4 @@ Two names for the same trap, one defense:
 - **Peer output is just the header, no answer** — the turn timed out (`--timeout`, default 600s) or hit an auth error. Check `codex login status`; raise `--timeout` for large `--mode implement` jobs.
 - **`codex: command not found`** — install the Codex CLI and `codex login`. This skill drives `codex exec` directly through `peer.sh`; it does **not** depend on the `/codex:rescue` plugin (which remains a fine manual alternative).
 - **`peer: unknown --backend`** — only `codex` is built in; add a vendor by writing one `backend_<name>()` function in `peer.sh`.
+- **`peer: disabled by …orchestrate.peer-off`** (exit 3) — the persistent switch is off by user choice, not an error; announce the degradation and continue. `peer.sh --on` re-enables.
