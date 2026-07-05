@@ -130,10 +130,15 @@ On top of that:
 11. **Regression test suite** — `tests/` holds standalone pressure scenarios,
     a RUNBOOK, recorded baseline/with-skill results, and an end-to-end live
     eval; any behavioral edit requires a scenario rerun (the iron law).
-12. **Optional custom roster** — `custom` modifier asks (multiSelect) which
-    installed roles to use this run; selected roles slot into a tier
-    (recon/mechanical/reasoning/peer) and inherit its rules; the routing
-    table itself never changes. `agent-TEMPLATE.md` is the authoring guide.
+12. **Optional custom roster — roles and skills** — the `custom` modifier
+    enumerates installed agent roles *and* installed skills (frontmatter
+    only) and asks (multiSelect) which to use this run. Selected roles slot
+    into a tier (recon/mechanical/reasoning/peer) and inherit its rules;
+    selected skills are injected per-dispatch by domain match — the matching
+    executor reads the skill as its operating procedure while the
+    orchestrator never reads the body, and every injection is announced. The
+    routing table itself never changes. `agent-TEMPLATE.md` is the authoring
+    guide for roles.
 
 ## Design and evaluation
 

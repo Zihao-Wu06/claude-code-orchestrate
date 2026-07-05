@@ -54,7 +54,7 @@ Modifiers go before the task, in any order, and combine
 | *(none)* | Standard routing. The two-model parallel cross-check fires only when a decision is both high-blast-radius and unverifiable. Verification runs the cheap check if one exists, else a blind reviewer. |
 | `economic` | Lowest expensive-model spend, at some retry risk. Borderline work tries Sonnet first (ladders up on failure); the parallel cross-check is **disabled** (deep-reasoner alone + a Sonnet review, with *"human sign-off recommended"* announced); Codex fires only when the orchestrator is looping (other signals are announced and skipped); the peer runs at `--effort medium`. **Verification is never cut.** Every skip is announced in the plan and the conclusion. |
 | `thorough` | Maximum rigor. Borderline work goes straight to Opus; the parallel path allows two reconcile rounds before escalating; high-stakes conclusions get an adversarial *falsify* pass; implement-type work always gets a reviewer (tests **and** a reviewer). |
-| `custom` | Before planning, you're asked (multi-select) which installed agent roles to use this run. Each selected role slots into a tier — recon / mechanical / reasoning / peer — by its description and inherits that tier's rules; the routing table itself is unchanged. Author your own role with `plugin/skills/orchestrate/agent-TEMPLATE.md`. |
+| `custom` | Before planning, you're asked (multi-select) which installed agent **roles** and which installed **skills** to use this run. A selected role slots into a tier — recon / mechanical / reasoning / peer — by its description and inherits that tier's rules. A selected skill is **injected per-dispatch by domain match**: the executor whose task falls in the skill's described domain is told to read that `SKILL.md` first and follow it as its operating procedure — the orchestrator matches on the frontmatter description alone (it never reads the body), the tier's contract still binds, every injection is announced, and a selected skill that matched no dispatch is announced rather than silently dropped. The routing table itself is unchanged. Author your own role with `plugin/skills/orchestrate/agent-TEMPLATE.md`. |
 
 **Budget modes never reduce how hard any executor thinks** — they change *who*
 gets the work and how much verification runs, never the assignee's reasoning
@@ -102,8 +102,13 @@ no Codex; any high-stakes fork is announced-and-skipped.
 /orchestrate custom Review this PR for security issues, then fix what's found.
 ```
 
-Expected: you're asked which installed roles to use (e.g. swap in your own
-`security-reviewer` agent); selected roles inherit the tier rules.
+Expected: you're asked which installed roles *and skills* to use (e.g. swap
+in your own `security-reviewer` agent, or inject an installed `sec-audit`
+skill). Selected roles inherit the tier rules; a selected skill lands only on
+the dispatch it matches — here the review dispatch would open with *"Read
+this first — it is your operating procedure; follow it:
+~/.claude/skills/sec-audit/SKILL.md"*, while the fix dispatches carry nothing
+extra.
 
 ### What the output looks like
 

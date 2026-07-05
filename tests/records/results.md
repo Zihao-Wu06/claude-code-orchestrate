@@ -191,6 +191,43 @@ untouched. Semantics unchanged.
 
 **Outcome: 3/3 PASS — the rename is behavior-neutral.**
 
+## Round 12 — custom roster takes skills (selection + injection), 2026-07-06
+
+Edit under test: the Custom roster section extends to two injectables —
+roles and **skills** (enumerate `~/.claude/skills/*/SKILL.md` + plugin
+skills frontmatter-only; AskUserQuestion offers both; per-dispatch injection
+by domain match; tier contract wins; every injection announced; the
+injection line rides in the task body so it stays verbatim on the
+blind-parallel path). dispatch-prompt.md gains skeleton slot 5
+(Operating skill) and a Common-mistakes row (no broadcast).
+
+New **scenario D** (two-part: (a) selection, (b) injection). RED story:
+
+- **RED run 1** (injection-only form of D, current text): unexpectedly
+  PASSED — the subject improvised correct injection from the existing
+  file-handoff idiom ("Read this first — it is your procedure"). The
+  injection half is therefore *emergent*; D keeps it as a regression guard
+  (same status as scenario A).
+- **RED run 2** (revised two-part D, current text): **FAIL on the selection
+  half** — "No Bash, Read, Grep, or Glob calls happen in Part (a)"; skills
+  were never enumerated, the subject instead asked the user *"Do you have a
+  security-review skill installed…?"*. Installed skills never surfaced as
+  concrete options. (Bonus evidence: the subject injected the skill path
+  into the *peer's* prompt too — adopted into the rule, since the
+  blind-parallel verbatim requirement demands it.)
+
+GREEN (post-edit), four scenarios in parallel:
+
+| Scenario | Verdict |
+|---|---|
+| D — skill selection + injection | **PASS 6/6** (globs skill frontmatter "never bodies", excludes orchestrate itself; offers roles+skills multiSelect; audit dispatch carries the verbatim Operating-skill line; rename dispatch carries none — "outside its domain"; body never read by the orchestrator; both match and non-match announced) |
+| A — trivial | **PASS** (row-2 solo; "briefing a subagent costs more than doing it") |
+| B — conflict | **PASS** (four-part brief, "No default pick, no recommendation, no lean"; correctly scopes the second reconcile round to `thorough`) |
+| C — recon (fallback) | **PASS** (scout-first data-handoff; single-executor-plus-reviewer reasoning for cheaply-verifiable high-stakes) |
+
+**Outcome: selection half RED→GREEN; injection half emergent, guarded; A/B/C
+hold — 4/4 PASS.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

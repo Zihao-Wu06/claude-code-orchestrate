@@ -8,6 +8,16 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- The `custom` roster now takes **skills** as well as roles: installed
+  skills are enumerated (frontmatter only) and offered alongside agent
+  roles; a selected skill is injected per-dispatch by domain match — the
+  matching executor is told to read it first and follow it as its operating
+  procedure. The injection rides in the task body, so it reaches the peer
+  too and stays verbatim on the blind-parallel path; the tier contract
+  always wins over an injected skill, and every injection — or a selected
+  skill that matched nothing — is announced. Guarded by the new scenario D
+  (selection half RED→GREEN; the injection half already emerged from the
+  file-handoff idiom and is kept as a regression guard).
 - Live end-to-end eval v1 (`tests/evals/live/`): a nested orchestrator
   subject really spawns subagents to fix a planted bug; graded on objective
   assertions (independent red-before/green-after reproduction included).
