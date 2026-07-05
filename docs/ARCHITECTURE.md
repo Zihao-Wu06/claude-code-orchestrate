@@ -62,7 +62,7 @@ Supporting pieces:
 `agents/`, `commands/` directly under it, as the official plugin spec
 requires). The repo root carries only the marketplace manifest
 (`.claude-plugin/marketplace.json`, `source: "./plugin"`) — the repo is its
-own marketplace, same layout as upstream open-science-skills.
+own marketplace.
 
 ## Load-bearing design decisions (index)
 
@@ -97,10 +97,7 @@ Three layers — fixtures, quantified evals, and narrative records — indexed i
 [tests/README.md](../tests/README.md), with the iron law and rerun
 procedures in [tests/RUNBOOK.md](../tests/RUNBOOK.md).
 
-## Provenance
+## License
 
-Adapted from Steven Denney's `fable-orchestrate`
-([scdenney/open-science-skills](https://github.com/scdenney/open-science-skills),
-CC BY-NC 4.0). The pristine upstream snapshot lives in
-`vendor/fable-orchestrate/` — see its `PROVENANCE.md` for sync procedure.
-The full feature delta is in [README.md](../README.md).
+[CC BY-NC 4.0](../LICENSE) — noncommercial use, attribution required. The
+feature list is in [README.md](../README.md).

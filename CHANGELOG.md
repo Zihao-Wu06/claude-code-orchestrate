@@ -37,7 +37,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 - The shippable plugin now lives entirely under `plugin/` (agents, commands,
-  skills, plugin manifest), mirroring upstream open-science-skills; the root
+  skills, plugin manifest); the root
   marketplace manifest points at `./plugin`. `install.sh` moved to
   `scripts/install.sh` (`make install`). Root entries: 19 → 15.
 - GitHub tree slimmed: raw eval run data is no longer committed (regenerable;
@@ -59,9 +59,8 @@ All notable changes to this project are documented here. The format follows
 - `peer.sh --help` extracts the header by marker instead of a hardcoded
   line range; `commands/orchestrate.md` no longer duplicates modifier
   semantics (SKILL.md is the single source); CI gains `workflow_dispatch`.
-- Repository structure aligned with industrial open-source conventions
-  (referenced: anthropics/claude-plugins-official, obra/superpowers):
-  `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG, vendor PROVENANCE,
+- Repository structure aligned with industrial open-source conventions:
+  `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG,
   Makefile + `scripts/bump-version.sh`, `.editorconfig`/`.gitattributes`,
   PR/issue templates with the skill-change test gate, CI converged onto
   `make check`, `tests/README.md` index.
@@ -74,12 +73,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [0.1.0] - 2026-07-05
 
-Initial release: an adaptation of `fable-orchestrate` from
-[scdenney/open-science-skills](https://github.com/scdenney/open-science-skills)
-(Steven Denney, CC BY-NC 4.0), substantially extended.
+Initial release.
 
 ### Added
-- **Skill core** (`skills/orchestrate/SKILL.md`): everything upstream —
+- **Skill core** (`skills/orchestrate/SKILL.md`): the core —
   first-match routing table, seven Opus/Sonnet mixing patterns, Codex
   use/don't-use signals, blind-parallel path, fragmentation/rubber-stamping
   guardrail — plus twelve enhancements: scout recon role (Haiku, read-only),
@@ -93,7 +90,7 @@ Initial release: an adaptation of `fable-orchestrate` from
   skeleton, per-tier fill-in templates, DONE/DONE_WITH_CONCERNS/
   NEEDS_CONTEXT/BLOCKED status vocabulary wired into the ladder, file
   handoff rules, data-handoff recon exception, peer framing + verbatim
-  blind-parallel rule. Modeled on superpowers subagent-driven-development.
+  blind-parallel rule.
 - **Validation**: six TDD rounds (baseline B failure — fluency tie-break —
   flipped GREEN and held through every subsequent edit); a real end-to-end
   field run whose blind reviewer caught a latent defect the whole chain
@@ -101,7 +98,6 @@ Initial release: an adaptation of `fable-orchestrate` from
   vs baseline 58.3%, `tests/evals/`); trigger tests (0 false positives).
 - **Packaging**: plugin + self-hosted marketplace manifests
   (`claude plugin validate --strict` clean), manual `install.sh`, CI
-  (shellcheck, manifest, integrity checks), LICENSE (CC BY-NC 4.0 with
-  upstream attribution).
+  (shellcheck, manifest, integrity checks), LICENSE (CC BY-NC 4.0).
 
 [0.1.0]: https://github.com/Zihao-Wu06/claude-code-orchestrate/releases/tag/v0.1.0

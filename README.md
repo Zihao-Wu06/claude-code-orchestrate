@@ -15,15 +15,9 @@ model-pinned executors:
 | scout | Haiku, read-only | locating code, mapping structure, summarizing state |
 | peer (Codex) | GPT-5, different vendor | fresh perspectives, disputed designs, parallel cross-checks |
 
-## Provenance & license
+## License
 
-Adapted from the `fable-orchestrate` skill in
-[scdenney/open-science-skills](https://github.com/scdenney/open-science-skills)
-by **Steven Denney** (CC BY-NC 4.0). Substantial changes made — see the feature
-delta below. This adaptation is likewise licensed
-[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): noncommercial
-use only, credit required. The pristine upstream snapshot is kept in
-`vendor/fable-orchestrate/` for diffing and future syncs.
+[CC BY-NC 4.0](LICENSE) — noncommercial use, attribution required.
 
 ## Install
 
@@ -67,14 +61,13 @@ skipped).
 Or just describe the job like a tech-lead brief: goal, context, constraints —
 and ask it to show the plan first.
 
-## What was changed vs upstream (feature delta)
+## Features
 
-Everything upstream is kept: the first-match routing table, the seven
-Opus/Sonnet mixing patterns, the Codex use/don't-use signals, the blind
-parallel path, the fragmentation/rubber-stamping guardrail, the gotchas.
-Added on top:
+A first-match routing table, executor-mixing patterns, a blind-parallel
+high-stakes path, and a fragmentation/rubber-stamping guardrail form the core.
+On top of that:
 
-1. **scout role** (new agent + routing row 4) — read-only recon on Haiku so the
+1. **scout role** (routing row 4) — read-only recon on Haiku so the
    orchestrator never burns its own context reading files to "understand first".
 2. **Cost & context policy** — explicit rules: >100-line reads go to scout;
    delegation prompts self-contained; every return capped at conclusion +
@@ -85,8 +78,8 @@ Added on top:
 4. **Delegation contract template** — six copy-paste fields (Goal / Inputs /
    Constraints / Interface / Acceptance check / Return format).
 5. **SDO-compliant description** — frontmatter states triggering conditions
-   only; upstream's summarized the workflow, which makes agents follow the
-   description and skip the body.
+   only; summarizing the workflow there makes agents follow the description
+   and skip the body.
 6. **Tech-lead command** — `/orchestrate` bakes in the goal/context/plan-first
    briefing pattern; main model and effort are the user's session choice, never
    dictated by the skill.
@@ -95,16 +88,16 @@ Added on top:
    by reducing any executor's thinking depth.
 8. **Escalation ladder** — fast-worker ×2 fail → deep-reasoner → (2 circling
    rounds) → Codex → human; never re-route a failed task down-tier.
-9. **Generalized peer interface** — `codex-peer.sh` refactored to
-   `peer.sh --backend codex` (one function per vendor backend; the verified
-   codex invocation pattern preserved verbatim) plus `--effort` mapped to
-   `model_reasoning_effort`.
+9. **Generalized peer interface** — `peer.sh --backend codex` wraps the vendor
+   CLI (one function per backend; add a vendor by adding a function), with
+   `--effort` mapped to `model_reasoning_effort` and an `--off`/`--on` switch
+   that makes the peer fully optional.
 10. **Fan-out worktree isolation** — parallel workers that edit files get
     `Agent(isolation: "worktree")`; non-overlapping scope on paper doesn't
     prevent real file conflicts.
 11. **Regression test suite** — `tests/` holds standalone pressure scenarios,
-    a RUNBOOK, and recorded baseline/with-skill results (superpowers
-    writing-skills TDD); any SKILL.md edit requires a rerun.
+    a RUNBOOK, recorded baseline/with-skill results, and an end-to-end live
+    eval; any behavioral edit requires a scenario rerun (the iron law).
 12. **Optional custom roster** — `custom` modifier asks (multiSelect) which
     installed roles to use this run; selected roles slot into a tier
     (recon/mechanical/reasoning/peer) and inherit its rules; the routing
@@ -205,7 +198,7 @@ after one reconcile round with the user pressing for an answer (temptation:
 break the tie by fluency); **C**, a 2,000-line refactor kickoff (temptation:
 read every file into the orchestrator's own context). Each scenario ran in two
 arms — *baseline* (a competent model, no skill) and *with-skill* (same model,
-skill loaded) — under the official skill-creator harness, graded against
+skill loaded) — under a structured eval harness, graded against
 quoted-evidence assertions. Subjects ran on Sonnet, so the with-skill arm's
 compliance *lower-bounds* a stronger orchestrator's.
 
@@ -303,7 +296,6 @@ plugin/                  the shippable plugin, complete in one folder:
 .claude-plugin/          marketplace manifest (repo is its own marketplace → ./plugin)
 docs/                    architecture and design-decision index
 tests/                   fixtures, eval harness, and validation records (see tests/README.md)
-vendor/fable-orchestrate pristine upstream snapshot (see its PROVENANCE.md; do not edit)
 scripts/ + Makefile      installer + maintenance tooling — `make check` is the health gate
 ```
 

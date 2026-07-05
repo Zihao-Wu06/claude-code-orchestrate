@@ -53,6 +53,4 @@ follow the full RED-GREEN loop: add or harden a scenario that fails first.
 ## License
 
 Contributions are accepted under the repo license,
-[CC BY-NC 4.0](LICENSE), which also binds this project to its upstream
-(`vendor/fable-orchestrate/` — do not edit that directory; see its
-`PROVENANCE.md` for the sync procedure). Noncommercial use only.
+[CC BY-NC 4.0](LICENSE): noncommercial use, attribution required.
