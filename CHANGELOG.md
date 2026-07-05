@@ -8,6 +8,13 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Changed
+- GitHub tree slimmed: raw eval run data is no longer committed (regenerable;
+  iteration-1 originals preserved in git history at `7767a0d`) — only
+  benchmark summaries and ANALYSIS ship; narrative records moved to
+  `tests/records/`; the agent authoring template moved up to
+  `skills/orchestrate/agent-TEMPLATE.md` (single-file directory removed);
+  accidentally committed local workflow config (AGENTS.md, .codex/) amended
+  out of history and gitignored.
 - Progressive disclosure: the seven mixing patterns and per-signal Codex
   explanations moved to `skills/orchestrate/patterns.md` (on-demand
   reference layer); all binding rules — including the cross-pattern

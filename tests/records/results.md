@@ -128,6 +128,22 @@ content was load-bearing and must move back.**
 **Outcome: 3/3 PASS with patterns.md unread — the rules layer is
 self-sufficient; only explanations moved out.**
 
+## Round 8 — tree cleanup reference updates, 2026-07-05
+
+Edit under test: agent authoring template moved up to
+`skills/orchestrate/agent-TEMPLATE.md` (single-file agents/ dir removed);
+SKILL.md custom-roster pointer updated. No rule changes.
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo, Read→Edit, refuses ceremony) |
+| B — conflict | **PASS** (four-part brief, no fifth part, no third round) |
+| C — recon (fallback) | **PASS** (scout-first with preamble, data-handoff exception, row-3 held for the design step with explicit dual-condition reasoning) |
+
+**Outcome: 3/3 PASS.** Note: subjects running inside this repo also surfaced
+the local CLAUDE.md orchestration default (another session's local, untracked
+config) — it did not affect verdicts; behavior matched the skill in all three.
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

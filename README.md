@@ -59,7 +59,7 @@ without it the Codex routing rows degrade gracefully (announced, skipped).
 - `thorough` — routes borderline work up to Opus, adds an adversarial falsify
   pass on high-stakes conclusions, doubles the reconcile budget.
 - `custom` — asks which installed agent roles to use for this run
-  (write your own with `skills/orchestrate/agents/TEMPLATE.md`).
+  (write your own with `skills/orchestrate/agent-TEMPLATE.md`).
 - No modifier — the standard routing table.
 
 Or just describe the job like a tech-lead brief: goal, context, constraints —
@@ -106,13 +106,13 @@ Added on top:
 12. **Optional custom roster** — `custom` modifier asks (multiSelect) which
     installed roles to use this run; selected roles slot into a tier
     (recon/mechanical/reasoning/peer) and inherit its rules; the routing
-    table itself never changes. `agents/TEMPLATE.md` is the authoring guide.
+    table itself never changes. `agent-TEMPLATE.md` is the authoring guide.
 
 ## Layout
 
 ```
 .claude-plugin/          plugin + marketplace manifests (repo is its own marketplace)
-skills/orchestrate/      the skill: SKILL.md, dispatch-prompt.md, peer.sh, agents/TEMPLATE.md
+skills/orchestrate/      the skill: SKILL.md, dispatch-prompt.md, patterns.md, peer.sh, agent-TEMPLATE.md
 agents/                  the three model-pinned agent definitions (plugin-standard location)
 commands/orchestrate.md  the /orchestrate slash command
 docs/                    architecture and design-decision index

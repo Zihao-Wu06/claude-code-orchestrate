@@ -191,7 +191,7 @@ Default roster = the three pinned agents + the peer; zero extra interaction. Whe
 1. Enumerate the agent types installed and visible to the Agent tool this session, alongside the default three.
 2. Ask the user (AskUserQuestion, multiSelect) which roles to use for this run.
 3. Slot each selected role into a **tier** — recon / mechanical / reasoning / peer — by its description. It inherits that tier's routing row, cost rules, and the ≤20-line return contract. The routing table itself never changes.
-4. A role whose definition pins no model does not enter the roster — pinning is what keeps spend predictable. Point the user at `agents/TEMPLATE.md` to author one properly.
+4. A role whose definition pins no model does not enter the roster — pinning is what keeps spend predictable. Point the user at `agent-TEMPLATE.md` (next to this SKILL.md) to author one properly.
 
 ## Guardrail — the one failure mode to defend against
 

@@ -37,7 +37,7 @@ check:
 	@test -f skills/orchestrate/SKILL.md
 	@test -f skills/orchestrate/dispatch-prompt.md
 	@test -f skills/orchestrate/patterns.md
-	@test -f skills/orchestrate/agents/TEMPLATE.md
+	@test -f skills/orchestrate/agent-TEMPLATE.md
 	@grep -q "patterns.md" skills/orchestrate/SKILL.md
 	@test -f commands/orchestrate.md
 	@for a in deep-reasoner fast-worker scout; do test -f "agents/$$a.md" || { echo "missing agents/$$a.md"; exit 1; }; done
