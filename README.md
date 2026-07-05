@@ -126,7 +126,7 @@ for the class of decisions a single model cannot verify. The claim under test
 is that this separation lowers cost and raises correctness discipline *without*
 lowering solution quality.
 
-### 2. Design principles (设计原理)
+### 2. Design principles
 
 Seven principles, each paired with the failure it prevents and enforced at a
 specific location in the skill (indexed in [ARCHITECTURE.md](docs/ARCHITECTURE.md)):
@@ -165,7 +165,7 @@ specific location in the skill (indexed in [ARCHITECTURE.md](docs/ARCHITECTURE.m
   with a four-part brief and no recommendation. *Prevents* the lightest model in
   the loop adjudicating a decision it cannot itself verify.
 
-### 3. Structure (结构)
+### 3. Structure
 
 The skill is layered so that only the rule core loads on every invocation and
 reference material loads on demand (progressive disclosure):
