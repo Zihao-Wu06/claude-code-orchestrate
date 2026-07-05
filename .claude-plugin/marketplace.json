@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-code-orchestrate",
+  "description": "Multi-model orchestration skill for Claude Code — lead model orchestrates Opus/Sonnet/Haiku subagents plus a cross-vendor Codex peer",
+  "owner": {
+    "name": "Zihao Wu",
+    "url": "https://github.com/Zihao-Wu06"
+  },
+  "plugins": [
+    {
+      "name": "orchestrate",
+      "description": "Multi-model orchestration: routing table (scout recon, mechanical, reasoning, cross-vendor peer tiers), six-field delegation contracts with dispatch templates, DONE/BLOCKED status vocabulary, budget modes (cheap/thorough), escalation ladder, blind-parallel high-stakes path with reconcile rules, and a verification stage. Installs the /orchestrate command and three model-pinned agents (deep-reasoner→Opus, fast-worker→Sonnet, scout→Haiku). Codex peer requires the Codex CLI (degrades gracefully without it). Adapted from Steven Denney's fable-orchestrate (CC BY-NC 4.0).",
+      "version": "0.1.0",
+      "license": "CC-BY-NC-4.0",
+      "author": {
+        "name": "Zihao Wu",
+        "url": "https://github.com/Zihao-Wu06"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Zihao-Wu06/claude-code-orchestrate"
+    }
+  ]
+}

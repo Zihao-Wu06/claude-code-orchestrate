@@ -13,11 +13,11 @@ rm -rf "$CLAUDE_DIR/skills/orchestrate"
 cp -R "$SRC/skills/orchestrate" "$CLAUDE_DIR/skills/orchestrate"
 chmod +x "$CLAUDE_DIR/skills/orchestrate/peer.sh"
 
-# Agent definitions — every role in agents/ except the authoring template
+# Agent definitions — every role in the repo-root agents/ (plugin-standard
+# location; the authoring template lives in skills/orchestrate/agents/)
 installed_agents=""
-for f in "$SRC/skills/orchestrate/agents/"*.md; do
+for f in "$SRC/agents/"*.md; do
   base="$(basename "$f")"
-  [ "$base" = "TEMPLATE.md" ] && continue
   cp "$f" "$CLAUDE_DIR/agents/$base"
   installed_agents="$installed_agents ${base%.md}"
 done
@@ -25,7 +25,7 @@ done
 # Slash command
 cp "$SRC/commands/orchestrate.md" "$CLAUDE_DIR/commands/orchestrate.md"
 
-echo "Installed:"
+echo "Installed (manual mode; plugin users: claude plugin marketplace add Zihao-Wu06/claude-code-orchestrate):"
 echo "  skill   -> $CLAUDE_DIR/skills/orchestrate/"
 echo "  agents  -> $CLAUDE_DIR/agents/:$installed_agents"
 echo "  command -> $CLAUDE_DIR/commands/orchestrate.md (/orchestrate)"

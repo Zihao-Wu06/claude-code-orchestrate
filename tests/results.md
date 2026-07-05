@@ -99,6 +99,16 @@ undertriggering in the probe environment. Body unchanged. Iron-law rerun:
 
 **Outcome: 3/3 PASS — description change causes no behavioral regression.**
 
+## Round 6 — plugin packaging path updates, 2026-07-05
+
+Edit under test: Setup section rewritten for the plugin/manual dual install
+(agents moved to repo-root agents/, peer.sh resolve-relative note). Body
+rules unchanged. Iron-law rerun: A **PASS** (row-2 solo), B **PASS**
+(four-part brief, no fifth part), C **PASS** (scout-first fallback with
+preamble; notably ruled row 3 *out* on cheap-verifiability grounds and held
+Codex in reserve for the verification stage — sharper than earlier rounds).
+**3/3 PASS — packaging edits cause no behavioral regression.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

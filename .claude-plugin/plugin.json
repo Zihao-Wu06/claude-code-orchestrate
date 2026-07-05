@@ -1,0 +1,11 @@
+{
+  "name": "orchestrate",
+  "description": "Multi-model orchestration for Claude Code: the session model leads as tech-lead orchestrator, routing work across model-pinned executors (deep-reasoner/Opus, fast-worker/Sonnet, scout/Haiku) and a cross-vendor Codex peer — with a first-match routing table, delegation contracts, budget modes, an escalation ladder, and a verification stage. Adapted from scdenney/open-science-skills' fable-orchestrate.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Zihao Wu",
+    "url": "https://github.com/Zihao-Wu06"
+  },
+  "homepage": "https://github.com/Zihao-Wu06/claude-code-orchestrate",
+  "license": "CC-BY-NC-4.0"
+}

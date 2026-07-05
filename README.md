@@ -23,6 +23,17 @@ use only, credit required. The pristine upstream snapshot is kept in
 
 ## Install
 
+**As a plugin (recommended):**
+
+```bash
+claude plugin marketplace add Zihao-Wu06/claude-code-orchestrate
+claude plugin install orchestrate@claude-code-orchestrate
+```
+
+Skills, the `/orchestrate` command, and the three agents register automatically.
+
+**Manually:**
+
 ```bash
 ./install.sh          # copies into ~/.claude/{skills,agents,commands}
 ```
@@ -96,11 +107,13 @@ Added on top:
 ## Repo layout
 
 ```
-skills/orchestrate/      the skill: SKILL.md, agents/, peer.sh
+.claude-plugin/          plugin + marketplace manifests (repo is its own marketplace)
+skills/orchestrate/      the skill: SKILL.md, dispatch-prompt.md, peer.sh, agents/TEMPLATE.md
+agents/                  the three model-pinned agent definitions (plugin-standard location)
 commands/orchestrate.md  the /orchestrate slash command
-tests/                   RUNBOOK, scenarios, recorded results
+tests/                   RUNBOOK, scenarios, field runs, eval suite + benchmark
 vendor/fable-orchestrate pristine upstream snapshot (do not edit)
-install.sh               user-wide installer (idempotent)
+install.sh               manual user-wide installer (idempotent)
 ```
 
 ## Testing the skill itself
