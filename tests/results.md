@@ -65,3 +65,21 @@ conditional (dispatch-prompt.md recon template + cost-policy line).
 **Round 3b — scenario C rerun after fix: PASS.** Subject explicitly invoked
 the new exception ("This is a data-handoff recon feeding another executor…
 caps do not apply here") and kept the rest of the skeleton intact.
+
+## Round 4 — post-field-run F1 fix, 2026-07-05
+
+Edit under test: field run 1 (tests/field-run-1.md) found statuses arriving
+after narrative preamble in 3 of 6 real subagent returns (F1). Fix: "The
+FIRST LINE of your final message is the status token — nothing before it"
+in all agent defs, TEMPLATE, and dispatch-prompt.md's status section.
+
+| Scenario | Verdict | Summary |
+|---|---|---|
+| A — trivial | **PASS** | Row-2 solo; explicitly rules out every executor including the reviewer stage ("briefing costs more than doing"). |
+| B — conflict | **PASS** | Four-part brief, no fifth part; new depth: refuses to smuggle its own new argument into the brief after the reconcile round closed ("introducing a fresh consideration only in the brief, unweighed by either executor, would be me quietly casting a vote"), and expands the terse side by asking that executor to state its own reasoning rather than inventing it. |
+| C — recon (hardened, fallback) | **PASS** | Role preamble verbatim, data-handoff exception invoked with justification, status-line-first in the return format, six fields present, and correctly defers the row-3 decision until recon returns. |
+
+**Outcome: 3/3 PASS.** The F1 wording is in the templates the subjects
+reproduce; live-executor compliance is verified separately in field runs
+(field-run-1.md notes residual risk: dispatch-level repetition helps but is
+not airtight — the orchestrator tolerates late-status parsing as fallback).

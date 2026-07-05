@@ -22,7 +22,7 @@ stated up front).
 
 ## Status vocabulary — every executor, every dispatch
 
-The final message **starts with one status**:
+**The FIRST LINE of the final message is the status token — nothing before it, not even one sentence of narration** (field-tested: executors drift into preamble unless this is stated absolutely):
 
 | Status | Meaning | Orchestrator's move |
 |---|---|---|
