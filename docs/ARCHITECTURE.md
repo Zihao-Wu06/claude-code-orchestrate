@@ -33,6 +33,10 @@ is the map, not the law.
 
 Supporting pieces:
 
+- `skills/orchestrate/patterns.md` — on-demand reference layer (the seven
+  mixing patterns and per-signal Codex explanations). Binding rules stay in
+  SKILL.md; this file loads only when composing multi-executor work —
+  progressive disclosure, same mechanism as dispatch-prompt.md.
 - `skills/orchestrate/agents/TEMPLATE.md` — authoring template for custom
   roles (used by the `custom` roster modifier). Deliberately kept *inside*
   the skill directory so plugin auto-registration never picks it up as a

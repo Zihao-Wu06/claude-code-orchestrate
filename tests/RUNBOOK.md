@@ -60,6 +60,13 @@ scenario as a one-shot subagent with a fresh context:
   ---
   ```
 
+  (In practice recent rounds instruct the subject to Read SKILL.md +
+  dispatch-prompt.md. `patterns.md` is an on-demand reference layer and is
+  **deliberately excluded** from the GREEN read set — compliance must hold
+  from SKILL.md + dispatch-prompt.md alone; if a scenario fails on content
+  that was moved to patterns.md, that content was load-bearing and must move
+  back into SKILL.md.)
+
 Run the three scenarios in parallel (one message, three Agent calls). The
 subagent is asked to *describe* its exact next tool calls, not execute them —
 we are grading the routing decision, not the work.

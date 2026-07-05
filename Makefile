@@ -36,7 +36,9 @@ check:
 	@test -f LICENSE && test -f CHANGELOG.md && test -f CONTRIBUTING.md
 	@test -f skills/orchestrate/SKILL.md
 	@test -f skills/orchestrate/dispatch-prompt.md
+	@test -f skills/orchestrate/patterns.md
 	@test -f skills/orchestrate/agents/TEMPLATE.md
+	@grep -q "patterns.md" skills/orchestrate/SKILL.md
 	@test -f commands/orchestrate.md
 	@for a in deep-reasoner fast-worker scout; do test -f "agents/$$a.md" || { echo "missing agents/$$a.md"; exit 1; }; done
 	@for s in A-trivial B-conflict C-recon; do test -f "tests/scenarios/$$s.md" || { echo "missing tests/scenarios/$$s.md"; exit 1; }; done

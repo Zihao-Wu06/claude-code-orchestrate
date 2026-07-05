@@ -109,6 +109,25 @@ preamble; notably ruled row 3 *out* on cheap-verifiability grounds and held
 Codex in reserve for the verification stage — sharper than earlier rounds).
 **3/3 PASS — packaging edits cause no behavioral regression.**
 
+## Round 7 — progressive-disclosure split, 2026-07-05
+
+Edit under test: seven mixing patterns + per-signal Codex explanations moved
+to patterns.md (reference layer); SKILL.md keeps the pattern-name list, the
+cross-pattern invariants, the worktree rule, and one-line signal
+enumerations (24,778 → 21,530 bytes, −13.1%). TEMPLATE.md authoring steps
+made install-mode aware. **Test design: subjects deliberately read only
+SKILL.md + dispatch-prompt.md — if a scenario failed on moved content, that
+content was load-bearing and must move back.**
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo, two tool calls, refuses ceremony) |
+| B — conflict | **PASS** (four-part brief, no fifth part; correctly notes thorough-mode's 2-round allowance doesn't apply in default mode) |
+| C — recon (fallback) | **PASS** — and notably picked up "disputed, expensive-to-undo design" and "adversarial falsify" from the compressed one-line signal list alone, planning a Codex falsify pass on the frozen design |
+
+**Outcome: 3/3 PASS with patterns.md unread — the rules layer is
+self-sufficient; only explanations moved out.**
+
 ## Eval suite (iteration 1) — quantified benchmark, 2026-07-05
 
 The scenarios were also ported to the skill-creator eval harness

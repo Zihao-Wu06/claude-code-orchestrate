@@ -6,14 +6,23 @@ tools: OPTIONAL — narrow to least privilege (e.g. "Read, Grep, Glob" for read-
 ---
 
 <!--
-Custom role template for the orchestrate skill. Not itself an agent —
-install.sh skips this file.
+Custom role template for the orchestrate skill. Not itself an agent — it
+lives inside the skill directory precisely so plugin auto-registration
+(which scans only the plugin root's agents/) never installs it as one.
 
-1. Copy to agents/<role-name>.md (kebab-case: letters, numbers, hyphens).
+To author a custom role:
+
+1. Copy this file OUT of the skill, to the location for your install mode
+   (kebab-case name: letters, numbers, hyphens):
+   - Plugin install → ~/.claude/agents/<role-name>.md (personal scope,
+     survives plugin updates). Never author inside the plugin cache
+     directory — updates replace it wholesale.
+   - Repo / manual install → <repo>/agents/<role-name>.md, then rerun
+     ./install.sh (or copy straight to ~/.claude/agents/).
 2. Fill the frontmatter above and delete the parenthetical notes.
 3. Pick the tier below — it decides which routing row, cost rules, and
    return contract the role inherits when selected via the `custom` modifier.
-4. Rerun install.sh, then reload the session so the name resolves.
+4. Reload the session so the name resolves.
 5. Changing the roster changes orchestration behavior: rerun the scenarios
    in tests/RUNBOOK.md.
 -->

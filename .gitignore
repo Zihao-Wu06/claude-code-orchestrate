@@ -15,3 +15,7 @@ tests/evals/trigger-eval-positives.json
 
 # Generated eval viewer (regenerate via generate_review.py --static; see tests/RUNBOOK.md)
 tests/evals/**/review.html
+
+# Local cross-tool workflow config (same class as CLAUDE.md/.claude/): never committed
+AGENTS.md
+.codex/

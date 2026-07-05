@@ -8,6 +8,18 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Changed
+- Progressive disclosure: the seven mixing patterns and per-signal Codex
+  explanations moved to `skills/orchestrate/patterns.md` (on-demand
+  reference layer); all binding rules — including the cross-pattern
+  invariants and the fan-out worktree rule — remain in SKILL.md, verified
+  by a scenario rerun whose subjects deliberately did not read patterns.md.
+- `agents/TEMPLATE.md` authoring steps are now install-mode aware (plugin
+  users author in `~/.claude/agents/`, never the plugin cache; manual users
+  in repo `agents/` + `./install.sh`) — the previous steps predated the
+  agents-directory move.
+- `peer.sh --help` extracts the header by marker instead of a hardcoded
+  line range; `commands/orchestrate.md` no longer duplicates modifier
+  semantics (SKILL.md is the single source); CI gains `workflow_dispatch`.
 - Repository structure aligned with industrial open-source conventions
   (referenced: anthropics/claude-plugins-official, obra/superpowers):
   `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG, vendor PROVENANCE,
