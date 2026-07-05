@@ -2,12 +2,21 @@
 
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions track
-`.claude-plugin/plugin.json` (bump both manifests via
+`plugin/.claude-plugin/plugin.json` (bump both manifests via
 `make bump-version V=x.y.z`).
 
 ## [Unreleased]
 
 ### Added
+- Live end-to-end eval v1 (`tests/evals/live/`): a nested orchestrator
+  subject really spawns subagents to fix a planted bug; graded on objective
+  assertions (independent red-before/green-after reproduction included).
+  Run 1: PASS 4/4 hard assertions; surfaced F-LIVE-1 (background-subagent
+  notifications unreliable one nesting level down — harness now mandates
+  foreground dispatches for subjects; documented in USAGE). Manifest-path
+  prose drift in CHANGELOG/CONTRIBUTING/bump-version fixed, with a
+  make-check guard for the stale-path pattern (both per cross-vendor
+  review follow-up).
 - The Codex peer is now explicitly optional: `peer.sh --off | --on | --status`
   persistent switch (marker outside the skill dir, survives updates; disabled
   runs refuse with exit 3). While off, the skill announces the skip and the

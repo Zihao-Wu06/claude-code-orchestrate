@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # bump-version.sh x.y.z — set the plugin version in BOTH manifests atomically.
 #
-# The version lives in two files (.claude-plugin/plugin.json and
-# .claude-plugin/marketplace.json .plugins[0].version); editing them by hand
+# The version lives in two files (plugin/.claude-plugin/plugin.json and
+# root .claude-plugin/marketplace.json .plugins[0].version); editing them by hand
 # is how they drift apart. This is the only supported way to change it.
 # (Simplified from superpowers' .version-bump.json multi-file mechanism.)
 set -euo pipefail

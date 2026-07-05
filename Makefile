@@ -50,6 +50,13 @@ check:
 	done
 	@echo "== markdown relative links =="
 	@python3 scripts/check-links.py
+	@echo "== manifest-path prose consistency =="
+	@# The plugin manifest moved to plugin/.claude-plugin/ — prose and comments
+	@# referencing the old root path misled contributors once already (caught
+	@# by cross-vendor review; inline code spans evade the link checker).
+	@! grep -rn --include="*.md" --include="*.sh" -E '(^|[^/a-z])\.claude-plugin/plugin\.json' \
+	     README.md CHANGELOG.md CONTRIBUTING.md docs/ tests/README.md tests/RUNBOOK.md scripts/ \
+	  || { echo "stale manifest path: use plugin/.claude-plugin/plugin.json"; exit 1; }
 	@echo "== peer.sh mock smoke =="
 	@bash tests/shell/test-peer.sh
 	@echo "== all checks passed =="

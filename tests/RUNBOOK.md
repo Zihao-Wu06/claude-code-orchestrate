@@ -46,6 +46,15 @@ full numbers in `evals/iteration-1/benchmark.md`, caveats in
 with the `generate_review.py --static` command from step 3 (or `make
 eval-view` for the exact invocation).
 
+## Live end-to-end eval (tests/evals/live/)
+
+`live-1-bugfix.md` defines the real-execution eval: a nested orchestrator
+subject spawns actual subagents to fix a planted bug in a generated sandbox,
+graded against objective assertions (suite passes, regression test
+red-before/green-after, status-first returns, no unjustified peer use).
+Results in `live-1-results.md`. v1 = 1 case × 1 rep, grader = coordinator;
+subject dispatches must be foreground (F-LIVE-1).
+
 ## Fallback: the manual three-scenario procedure (original method)
 
 Each scenario file in `scenarios/` contains a `## PROMPT` section. Run each

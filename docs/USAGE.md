@@ -80,6 +80,11 @@ Expected: you're asked which installed roles to use (e.g. swap in your own
   answer** — that's by design, not a failure: after a blind parallel run and
   one reconcile round, genuine disagreement escalates to you with the crux
   facts only you hold (see SKILL.md, the high-stakes parallel path).
+- **Running the orchestrator itself as a subagent (nested)?** Dispatch your
+  executors in the foreground — background-subagent completion notifications
+  are not reliably delivered one nesting level down, so a background wait can
+  hang forever (live-eval finding F-LIVE-1). The skill's background guidance
+  assumes a top-level session.
 - **Everything routed to the orchestrator itself** — trivial single-step
   tasks are *supposed* to skip delegation (routing row 2); if a big task did
   this, file a bug with the plan it printed.

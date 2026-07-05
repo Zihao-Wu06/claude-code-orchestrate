@@ -73,8 +73,7 @@ positive triggering evidence under real conditions.
   trees are no longer committed (regenerable; iteration-1 originals preserved
   verbatim in git history at commit `7767a0d`). A fully independent grader
   pass is a future-work upgrade.
-- **Queued (per cross-vendor review, deliberately deferred pending a token
-  budget):** at least one live end-to-end eval scenario — real subagent
-  spawns, real install + peer.sh flow, return-format assertions — run ≥3
-  reps with blind grading. Complements (does not replace) the decision-trace
-  scenarios; see also field-run-1 for the manual precedent.
+- **Live end-to-end eval: v1 built and run** (tests/evals/live/ — real
+  nested orchestrator, real subagents, objective assertions; Run 1 PASS
+  4/4 hard assertions and surfaced harness finding F-LIVE-1). Still queued:
+  the ≥3-reps + independent blind-grader upgrade, pending a token budget.
