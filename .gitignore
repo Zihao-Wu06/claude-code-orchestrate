@@ -12,3 +12,6 @@ __pycache__/
 
 # One-off eval scratch subset (regenerated on demand, not a deliverable)
 tests/evals/trigger-eval-positives.json
+
+# Generated eval viewer (regenerate via generate_review.py --static; see tests/RUNBOOK.md)
+tests/evals/**/review.html

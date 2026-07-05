@@ -38,8 +38,10 @@ built with the official skill-creator harness. To rerun after a skill edit:
 
 Iteration-1 results: with_skill 100% vs baseline 58.3% (delta +0.42);
 full numbers in `evals/iteration-1/benchmark.md`, caveats in
-`evals/iteration-1/ANALYSIS.md`, browsable run-by-run in
-`evals/iteration-1/review.html`.
+`evals/iteration-1/ANALYSIS.md`. The browsable run-by-run viewer
+(`review.html`) is a generated artifact and is NOT committed — regenerate it
+with the `generate_review.py --static` command from step 3 (or `make
+eval-view` for the exact invocation).
 
 ## Fallback: the manual three-scenario procedure (original method)
 

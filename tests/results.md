@@ -118,4 +118,5 @@ positives across 12 negative samples), ~zero recall in the `claude -p`
 probe environment (see evals/iteration-1/ANALYSIS.md for the honest
 interpretation — including the same-day real-environment auto-trigger that
 contaminated, and thereby validated, the baseline arm). Full artifacts:
-benchmark.md, ANALYSIS.md, review.html under tests/evals/iteration-1/.
+benchmark.md and ANALYSIS.md under tests/evals/iteration-1/ (the browsable
+review.html viewer is generated, not committed — see tests/RUNBOOK.md).
