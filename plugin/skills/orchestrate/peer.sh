@@ -80,9 +80,16 @@ with_timeout(){
   elif command -v gtimeout >/dev/null 2>&1; then
     gtimeout "${TIMEOUT}s" "$@"
   else
-    "$@" &
+    # Run the command as its own process-GROUP leader (perl setpgrp — macOS
+    # and Linux both ship perl) so the kill takes down the whole tree.
+    # Killing only the direct child leaks grandchildren that keep the
+    # stdout/--out pipe open forever. GNU timeout does this grouping itself.
+    perl -e 'setpgrp(0,0); exec @ARGV; die "exec: $!"' -- "$@" &
     local cmd_pid=$!
-    ( sleep "$TIMEOUT"; kill -TERM "$cmd_pid" 2>/dev/null ) &
+    # The watchdog must NOT inherit stdout/stderr: a captured $(…) or a pipe
+    # would otherwise wait on its long sleep as an open writer even after the
+    # real command finished instantly.
+    ( sleep "$TIMEOUT"; kill -TERM -- "-$cmd_pid" 2>/dev/null ) < /dev/null > /dev/null 2>&1 &
     local dog_pid=$!
     local rc=0
     wait "$cmd_pid" || rc=$?

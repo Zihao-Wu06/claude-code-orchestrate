@@ -7,6 +7,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- CI now smoke-tests the manual install path on Linux **and macOS**
+  (`make smoke-install`: placement, idempotence, stale-agent cleanup — the
+  macOS job is the first CI coverage of peer.sh's bash-3.2/watchdog branch),
+  runs a mock-codex peer.sh test (`tests/shell/test-peer.sh`: sandbox flags,
+  --effort mapping, stdin redirection, hung-backend kill), validates both
+  plugin manifests against the official schema in a dedicated job, and
+  checks relative markdown links (`scripts/check-links.py` — the guard for
+  the README badge link rot this round fixed). install.sh gained a
+  post-install self-check and manifest-scoped stale-agent cleanup.
+  docs/USAGE.md added (worked examples, modifier guidance, failure hints).
+  A live-scenario eval (≥3 reps, blind grading) is queued in the eval
+  backlog pending a token budget. (Adjudicated from a cross-vendor Codex
+  review: adopted P0/P1b fully, P1a/P2a/P2b partially, deferred P1c.)
+
 ### Changed
 - The shippable plugin now lives entirely under `plugin/` (agents, commands,
   skills, plugin manifest), mirroring upstream open-science-skills; the root
