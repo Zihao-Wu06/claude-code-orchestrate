@@ -2,7 +2,7 @@
 
 [![ci](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml/badge.svg)](https://github.com/Zihao-Wu06/claude-code-orchestrate/actions/workflows/ci.yml)
 [![license: CC BY-NC 4.0](https://img.shields.io/badge/license-CC%20BY--NC%204.0-lightgrey.svg)](LICENSE)
-[![plugin](https://img.shields.io/badge/claude%20code-plugin-blue.svg)](plugin/.claude-plugin/plugin.json)
+[![plugin](https://img.shields.io/badge/Claude%20Code-plugin-blue?logo=claude&logoColor=white)](https://code.claude.com/docs/en/skills)
 
 The session's main model (intended: Fable 5) leads as **orchestrator** — planning,
 decomposing, delegating, synthesizing — while the actual work routes to cheaper,
