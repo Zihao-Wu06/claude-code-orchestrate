@@ -1,8 +1,7 @@
 # tests/ — what lives here and how to run it
 
-This directory holds three distinct kinds of content (pattern borrowed from
-[obra/superpowers](https://github.com/obra/superpowers)' `docs/testing.md`
-two-way split between deterministic tests and LLM-behavior evals):
+This directory holds three distinct kinds of content, separating
+deterministic tests from LLM-behavior evals:
 
 ## 1. Behavior scenarios — the fixtures
 
@@ -26,8 +25,7 @@ rerun) lives in [RUNBOOK.md](RUNBOOK.md).
   (aggregate numbers) and `ANALYSIS.md` (caveats and incidents — read this
   before quoting the numbers)
 
-Built on the official skill-creator harness; rerun procedure is in
-RUNBOOK.md. Raw run data (per-case `answer.md`, `grading.json`,
+Rerun procedure is in RUNBOOK.md. Raw run data (per-case `answer.md`, `grading.json`,
 `timing.json`, trigger-results) and generated artifacts (`review.html`,
 `*.log`) are **not committed** — reruns regenerate them locally
 (gitignored), and the iteration-1 originals are preserved verbatim in git

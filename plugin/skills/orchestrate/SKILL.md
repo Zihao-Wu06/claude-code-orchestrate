@@ -41,12 +41,12 @@ chmod +x ~/.claude/skills/orchestrate/peer.sh
 codex login status          # must say "Logged in" — otherwise: codex login
 ```
 
-The peer is **optional, with a hard switch**: `peer.sh --off` disables it persistently (`--on` re-enables, `--status` reports; while off, peer calls refuse with exit 3 — the marker lives at `~/.claude/orchestrate.peer-off`, outside the skill dir, so it survives updates). If the peer is switched off, or the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), and a row-3 hit falls back to its cheap-mode form (deep-reasoner solo + independent review + human-sign-off note). Everything else works.
+The peer is **optional, with a hard switch**: `peer.sh --off` disables it persistently (`--on` re-enables, `--status` reports; while off, peer calls refuse with exit 3 — the marker lives at `~/.claude/orchestrate.peer-off`, outside the skill dir, so it survives updates). If the peer is switched off, or the Codex CLI is absent or logged out, say so once and continue: the Codex routing rows degrade (skip with an announcement), and a row-3 hit falls back to its economic-mode form (deep-reasoner solo + independent review + human-sign-off note). Everything else works.
 
 ## Invocation modifiers
 
 The invocation may start with modifiers, in any order, before the task:
-- `cheap` | `thorough` — budget mode (see **Budget modes**). Neither = default mode.
+- `economic` | `thorough` — budget mode (see **Budget modes**). Neither = default mode.
 - `custom` — select a custom roster before planning (see **Custom roster**).
 
 ## Run (the orchestration loop)
@@ -173,25 +173,33 @@ Launch **both** executors on the **same** problem, **in one message, blind to ea
 
 Modes adjust **routing tendency** and **verification intensity**. They never silently lower quality: every skipped cross-check is announced in the plan and in the conclusion.
 
-| Lever | `cheap` | default | `thorough` |
+| Lever | `economic` | default | `thorough` |
 |---|---|---|---|
-| Row-3 parallel cross-check | **Disabled.** On a dual-condition hit: deep-reasoner solo + independent Sonnet review, and announce *"cheap mode skipped the cross-vendor check — human sign-off recommended"* | Fires on the dual condition | Fires on the dual condition; reconcile rounds 1 → 2 before escalating |
+| Row-3 parallel cross-check | **Disabled.** On a dual-condition hit: deep-reasoner solo + independent Sonnet review, and announce *"economic mode skipped the cross-vendor check — human sign-off recommended"* | Fires on the dual condition | Fires on the dual condition; reconcile rounds 1 → 2 before escalating |
 | Borderline task (reasoning vs mechanical unclear) | **Route down:** fast-worker first, with the acceptance check; ladder up on failure | Judgment call per the table | **Route up:** deep-reasoner directly |
-| Codex signals | Only "you are looping"; on other signals announce *"cross-check available, skipped (cheap)"* | All seven | All seven, plus an adversarial falsify pass on high-stakes conclusions |
+| Codex signals | Only "you are looping"; on other signals announce *"cross-check available, skipped (economic)"* | All seven | All seven, plus an adversarial falsify pass on high-stakes conclusions |
 | Verification stage | **Never cut**; reviewer pinned to Sonnet | Cheap check → run it; else reviewer | Implement-type always gets a reviewer (tests AND reviewer) |
 | Thinking depth | Claude executors unchanged; peer calls use `--effort medium` | Full; peer at its default (xhigh) | Full; peer at xhigh |
 | scout / trivial-solo rows | unchanged | unchanged | unchanged |
 
 **Thinking depth is not a budget lever.** Modes change *who* gets the task, never how hard the assignee thinks. The savings come from routing borderline work down and cutting the redundant second channel — both auditable, both announced. Hobbling the assignee instead produces confident-but-shallow answers whose rework costs more than the tokens saved. Concretely: deep-reasoner always thinks at full depth ("think thoroughly" is its role definition, not a mode setting — the cheap way to save is to dispatch it less, not to dispatch it and hobble it); fast-worker always executes directly without extended analysis (also role definition); the peer is the only executor with a hard depth knob (`--effort`), and only modes move it.
 
-## Custom roster (`custom` modifier)
+## Custom roster (`custom` modifier) — roles and skills
 
-Default roster = the three pinned agents + the peer; zero extra interaction. When invoked with `custom` (or the user asks mid-run):
+Default roster = the three pinned agents + the peer, no injected skills; zero extra interaction. When invoked with `custom` (or the user asks mid-run), the roster takes two kinds of injectables — **roles** (who executes: an agent definition with a model pin) and **skills** (how a domain is worked: an installed skill whose procedure the matching executor should follow):
 
-1. Enumerate the agent types installed and visible to the Agent tool this session, alongside the default three.
-2. Ask the user (AskUserQuestion, multiSelect) which roles to use for this run.
+1. Enumerate both kinds: the agent types visible to the Agent tool this session (alongside the default three), and the installed skills — glob `~/.claude/skills/*/SKILL.md` plus the `skills/` directories of installed plugins, reading **frontmatter only** (`name:` + `description:`), never a body. Exclude this skill itself.
+2. Ask the user (AskUserQuestion, multiSelect) which roles **and which skills** to use for this run — skills appear as concrete named options with their descriptions, never as "do you have one installed?".
 3. Slot each selected role into a **tier** — recon / mechanical / reasoning / peer — by its description. It inherits that tier's routing row, cost rules, and the ≤20-line return contract. The routing table itself never changes.
 4. A role whose definition pins no model does not enter the roster — pinning is what keeps spend predictable. Point the user at `agent-TEMPLATE.md` (next to this SKILL.md) to author one properly.
+
+**Skill injection** — how a selected skill reaches executors:
+
+- **Per-dispatch, by domain match.** When a dispatched task falls inside a selected skill's described domain, add the Operating-skill line (dispatch-prompt.md skeleton) to that dispatch's Inputs: the executor reads the skill in *its* context and follows it as its procedure. Dispatches outside the domain never carry it — an injected skill serves matching work, not every dispatch.
+- **Never read the skill body yourself.** The frontmatter description is the matching key (cost & context policy); the executor is the one who loads the procedure.
+- **It rides in the task body**, so it reaches any executor that can read files — the peer included; on the blind-parallel path the injection line is part of the verbatim-identical task body both executors receive.
+- **Tier contract wins.** An injected skill never overrides the tier's rules — status-first return, the return cap, scout's read-only bound. If the skill's procedure needs what the tier forbids (an editing skill matched to read-only recon), don't inject: announce the conflict and route per the table.
+- **Announce every injection** in the plan (which dispatch carries which skill); a selected skill that matched no dispatch is announced at the end, never silently dropped.
 
 ## Guardrail — the one failure mode to defend against
 

@@ -29,5 +29,4 @@ $ make check
 ## License acknowledgement
 
 - [ ] I understand contributions land under [CC BY-NC 4.0](../LICENSE)
-      (noncommercial, attribution — including upstream credit to
-      scdenney/open-science-skills), and `vendor/` stays pristine.
+      (noncommercial use, attribution required).
