@@ -20,22 +20,22 @@ model-pinned executors:
 Use `orchestrate` when a coding task needs a strong lead model, but not every
 step deserves that model's full context and token budget.
 
-- Keep the lead model on the hard parts.** It owns the plan, trade-offs,
+- **Keep the lead model on the hard parts.** It owns the plan, trade-offs,
    integration, and final judgment.
-- Move context-heavy work out of the main thread.** Reconnaissance and file
+- **Move context-heavy work out of the main thread.** Reconnaissance and file
    mapping come back as short, evidence-backed summaries.
-- Route routine work without lowering the bar.** Mechanical tasks go to
+- **Route routine work without lowering the bar.** Mechanical tasks go to
    cheaper capable executors, but still return against explicit acceptance
    checks.
-- Escalate only when needed.** Hard reasoning routes to Opus; disputed or
+- **Escalate only when needed.** Hard reasoning routes to Opus; disputed or
    risky calls can get a peer path instead of one model reviewing itself.
-- Make the workflow harder to drift.** Every delegation has a contract,
+- **Make the workflow harder to drift.** Every delegation has a contract,
    status, and verification step before the result is used.
 
 ## What makes it Special?
 
 With `custom`, `orchestrate` can attach task-specific skills to the subagents
-that actually need them (eg.`frontend.skill`, `backend.skill`, `design.skill`, `security.skill`,
+that actually need them (e.g. `frontend.skill`, `backend.skill`, `design.skill`, `security.skill`,
 `docs.skill`, `testing.skill`...).
 
 1. **Run-specific roster:** choose which installed agents and skills are active
@@ -83,6 +83,9 @@ and [Models overview](https://platform.claude.com/docs/en/about-claude/models/ov
 
 ## Contents
 
+- [Why use it?](#why-use-it)
+- [What makes it Special?](#what-makes-it-special)
+- [Why using Multi-Model?](#why-using-multi-model)
 - [Install](#install)
 - [Usage](#usage)
   - [Quick start](#quick-start)
