@@ -16,13 +16,8 @@ stated up front).
 3. **The contract** — the six fields.
 4. **Inputs handoff** — ≤20 lines inline; anything bigger goes in as a file
    path introduced as *"Read this first — it is your requirements."*
-5. **Operating skill** — ONLY when the custom roster injected a skill whose
-   domain matches this dispatch: add to the Inputs — *"Read this first — it
-   is your operating procedure; follow it: `<path>/SKILL.md`"*. The tier's
-   contract and return format still bind. On the blind-parallel path this
-   line is part of the verbatim task body both executors receive.
-6. **Before-you-begin clause** — questions surface now, not mid-work.
-7. **Report contract** — status vocabulary + final-message cap (+ report file
+5. **Before-you-begin clause** — questions surface now, not mid-work.
+6. **Report contract** — status vocabulary + final-message cap (+ report file
    for implement-type work).
 
 ## Status vocabulary — every executor, every dispatch
@@ -170,6 +165,5 @@ the code, return NEEDS_CONTEXT with the mismatch — do not resolve it yourself.
 | No constraints | State what must NOT change — executors expand scope otherwise |
 | Vague output ("fix it") | Acceptance check + status + return format, always |
 | Pasting session history | A dispatch describes one task; bulk goes in as a file path |
-| Broadcasting an injected skill into every dispatch | Inject only where the task matches the skill's described domain |
 | Repeating the role contract to a *named* subagent | Preamble is for the fallback path and the peer only |
 | Different task wording per executor on the blind-parallel path | Task body verbatim identical; only the preamble differs |
