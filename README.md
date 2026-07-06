@@ -32,7 +32,20 @@ step deserves that model's full context and token budget.
 - Make the workflow harder to drift.** Every delegation has a contract,
    status, and verification step before the result is used.
 
-## Why using multi-model?
+## What makes it Special?
+
+With `custom`, `orchestrate` can attach task-specific skills to the subagents
+that actually need them (eg.`frontend.skill`, `backend.skill`, `design.skill`, `security.skill`,
+`docs.skill`, `testing.skill`...).
+
+1. **Run-specific roster:** choose which installed agents and skills are active
+   before planning starts.
+2. **Skill injection:** matching dispatches tell the assigned subagent which
+   `SKILL.md` to read and follow.
+3. **No context flooding:** the lead model only decides which skill fits; the
+   assigned subagent reads the full skill instructions when it starts that task.
+
+## Why using Multi-Model?
 
 `orchestrate` uses Fable 5 as the lead model, not the universal executor. The
 goal is to keep the highest-capability model focused on planning, delegation,
