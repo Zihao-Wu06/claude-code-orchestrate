@@ -7,115 +7,52 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Added
-- The `custom` roster now takes **skills** as well as roles: installed
-  skills are enumerated (frontmatter only) and offered alongside agent
-  roles; a selected skill is injected per-dispatch by domain match — the
-  matching executor is told to read it first and follow it as its operating
-  procedure. The injection rides in the task body, so it reaches the peer
-  too and stays verbatim on the blind-parallel path; the tier contract
-  always wins over an injected skill, and every injection — or a selected
-  skill that matched nothing — is announced. Guarded by the new scenario D
-  (selection half RED→GREEN; the injection half already emerged from the
-  file-handoff idiom and is kept as a regression guard).
-- Live end-to-end eval v1 (`tests/evals/live/`): a nested orchestrator
-  subject really spawns subagents to fix a planted bug; graded on objective
-  assertions (independent red-before/green-after reproduction included).
-  Run 1: PASS 4/4 hard assertions; surfaced F-LIVE-1 (background-subagent
-  notifications unreliable one nesting level down — harness now mandates
-  foreground dispatches for subjects; documented in USAGE). Manifest-path
-  prose drift in CHANGELOG/CONTRIBUTING/bump-version fixed, with a
-  make-check guard for the stale-path pattern (both per cross-vendor
-  review follow-up).
-- The Codex peer is now explicitly optional: `peer.sh --off | --on | --status`
-  persistent switch (marker outside the skill dir, survives updates; disabled
-  runs refuse with exit 3). While off, the skill announces the skip and the
-  high-stakes path falls back to its economic-mode single-executor form.
-- CI now smoke-tests the manual install path on Linux **and macOS**
-  (`make smoke-install`: placement, idempotence, stale-agent cleanup — the
-  macOS job is the first CI coverage of peer.sh's bash-3.2/watchdog branch),
-  runs a mock-codex peer.sh test (`tests/shell/test-peer.sh`: sandbox flags,
-  --effort mapping, stdin redirection, hung-backend kill), validates both
-  plugin manifests against the official schema in a dedicated job, and
-  checks relative markdown links (`scripts/check-links.py` — the guard for
-  the README badge link rot this round fixed). install.sh gained a
-  post-install self-check and manifest-scoped stale-agent cleanup.
-  docs/USAGE.md added (worked examples, modifier guidance, failure hints).
-  A live-scenario eval (≥3 reps, blind grading) is queued in the eval
-  backlog pending a token budget. (Adjudicated from a cross-vendor Codex
-  review: adopted P0/P1b fully, P1a/P2a/P2b partially, deferred P1c.)
+## [0.1.0] - 2026-07-06
 
-### Changed
-- README gains a dedicated **The Codex peer** section documenting the on/off
-  switch (`--status` / `--off` / `--on`, persistent marker outside the skill
-  dir) and the unreachable-auto-off degrade path — distinguishing the
-  deliberate, persistent switch (exit 3, needs `--on` to recover) from the
-  automatic, *transient* skip when the Codex CLI is absent (self-heals once
-  Codex is reachable again).
-- The `cheap` budget mode is renamed to `economic` (same semantics; the
-  0.1.0 entry below keeps the original name as a historical record).
-- The shippable plugin now lives entirely under `plugin/` (agents, commands,
-  skills, plugin manifest); the root
-  marketplace manifest points at `./plugin`. `install.sh` moved to
-  `scripts/install.sh` (`make install`). Root entries: 19 → 15.
-- GitHub tree slimmed: raw eval run data is no longer committed (regenerable;
-  iteration-1 originals preserved in git history at `7767a0d`) — only
-  benchmark summaries and ANALYSIS ship; narrative records moved to
-  `tests/records/`; the agent authoring template moved up to
-  `skills/orchestrate/agent-TEMPLATE.md` (single-file directory removed);
-  accidentally committed local workflow config (AGENTS.md, .codex/) amended
-  out of history and gitignored.
-- Progressive disclosure: the seven mixing patterns and per-signal Codex
-  explanations moved to `skills/orchestrate/patterns.md` (on-demand
-  reference layer); all binding rules — including the cross-pattern
-  invariants and the fan-out worktree rule — remain in SKILL.md, verified
-  by a scenario rerun whose subjects deliberately did not read patterns.md.
-- `agents/TEMPLATE.md` authoring steps are now install-mode aware (plugin
-  users author in `~/.claude/agents/`, never the plugin cache; manual users
-  in repo `agents/` + `./install.sh`) — the previous steps predated the
-  agents-directory move.
-- `peer.sh --help` extracts the header by marker instead of a hardcoded
-  line range; `commands/orchestrate.md` no longer duplicates modifier
-  semantics (SKILL.md is the single source); CI gains `workflow_dispatch`.
-- Repository structure aligned with industrial open-source conventions:
-  `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG,
-  Makefile + `scripts/bump-version.sh`, `.editorconfig`/`.gitattributes`,
-  PR/issue templates with the skill-change test gate, CI converged onto
-  `make check`, `tests/README.md` index.
-- Generated artifacts (`review.html`, run logs, scratch eval subsets) are no
-  longer tracked; regeneration commands documented in `tests/RUNBOOK.md`.
-- Deliberately omitted (not oversight): CODE_OF_CONDUCT/SECURITY.md (no
-  community/attack surface yet), pre-commit framework (Makefile + CI cover
-  the same checks without a new dependency), CLAUDE.md/AGENTS.md
-  (CONTRIBUTING.md carries that role).
-
-## [0.1.0] - 2026-07-05
-
-Initial release.
+Initial public release.
 
 ### Added
-- **Skill core** (`skills/orchestrate/SKILL.md`): the core —
-  first-match routing table, seven Opus/Sonnet mixing patterns, Codex
-  use/don't-use signals, blind-parallel path, fragmentation/rubber-stamping
-  guardrail — plus twelve enhancements: scout recon role (Haiku, read-only),
-  cost & context policy, verification stage, six-field delegation contract,
-  SDO-compliant description, `/orchestrate` command, budget modes
-  (`cheap`/`thorough`, never reducing thinking depth), escalation ladder,
-  generalized `peer.sh` (`--backend`, `--effort`, portable timeout fallback
-  for macOS), fan-out worktree isolation, TDD regression suite, optional
-  custom roster (`custom` modifier + agents TEMPLATE).
-- **Dispatch-prompt layer** (`dispatch-prompt.md`): six-part dispatch
-  skeleton, per-tier fill-in templates, DONE/DONE_WITH_CONCERNS/
-  NEEDS_CONTEXT/BLOCKED status vocabulary wired into the ladder, file
-  handoff rules, data-handoff recon exception, peer framing + verbatim
-  blind-parallel rule.
-- **Validation**: six TDD rounds (baseline B failure — fluency tie-break —
-  flipped GREEN and held through every subsequent edit); a real end-to-end
-  field run whose blind reviewer caught a latent defect the whole chain
-  missed (`tests/records/field-run-1.md`); a quantified eval suite (with-skill 100%
-  vs baseline 58.3%, `tests/evals/`); trigger tests (0 false positives).
-- **Packaging**: plugin + self-hosted marketplace manifests
-  (`claude plugin validate --strict` clean), manual `install.sh`, CI
-  (shellcheck, manifest, integrity checks), LICENSE (CC BY-NC 4.0).
+- **Skill core** (`SKILL.md`): the first-match routing table, seven
+  Opus/Sonnet mixing patterns, Codex use/don't-use signals, the blind-parallel
+  high-stakes path, and the fragmentation/rubber-stamping guardrail — plus the
+  scout recon role (Haiku, read-only), the cost & context policy, the
+  verification stage, the six-field delegation contract, an SDO-compliant
+  description, budget modes (`economic` / default / `thorough`, never reducing
+  any executor's thinking depth), the escalation ladder, and fan-out worktree
+  isolation.
+- **Custom roster — roles and skills** (`custom` modifier): enumerates
+  installed agent roles *and* installed skills (frontmatter only) and asks
+  which to use this run. A role slots into a tier; a selected skill is injected
+  into the matching dispatch as its operating procedure — announced, never
+  broadcast, the tier contract always winning. `agent-TEMPLATE.md` is the
+  authoring guide for roles.
+- **Dispatch + reference layers** (`dispatch-prompt.md`, `patterns.md`): the
+  dispatch skeleton and per-tier templates, the
+  DONE/DONE_WITH_CONCERNS/NEEDS_CONTEXT/BLOCKED status vocabulary wired into
+  the ladder, file-handoff rules, the data-handoff recon exception, and the
+  verbatim blind-parallel rule; the seven mixing patterns load on demand
+  (progressive disclosure) while all binding rules stay in SKILL.md.
+- **Cross-vendor peer** (`peer.sh`): a generalized wrapper (`--backend`, one
+  function per vendor, Codex built in), `--effort` mapped to
+  `model_reasoning_effort`, `--mode consult|implement`, and a portable timeout
+  with a process-group watchdog for macOS. A hard, persistent on/off switch
+  (`--off | --on | --status`; marker outside the skill dir so it survives
+  updates; disabled calls exit 3) — while off, or when the Codex CLI is
+  unreachable, the skill announces the skip and the high-stakes path falls back
+  to its economic-mode single-executor form.
+- **Validation**: ten TDD RED→GREEN rounds (every edit to a behavioral file
+  re-runs the scenarios — the iron law); a quantified ablation (with-skill
+  100% vs. baseline 58.3%, Δ+0.42); a field trial whose blind reviewer caught
+  a latent defect the whole chain missed; a live end-to-end eval (a nested
+  orchestrator really fixes a planted bug, graded on independent
+  red-before/green-after reproduction); trigger tests (0 false activations).
+- **Packaging, CI & docs**: plugin + self-hosted marketplace manifests
+  (`claude plugin validate --strict` clean); `make install` with a
+  post-install self-check and manifest-scoped stale-agent cleanup; `make
+  check` plus a Linux **and** macOS smoke-install and a dedicated
+  manifest-schema job in CI; a usage guide and a paper-style design/evaluation
+  writeup in the README, `docs/ARCHITECTURE.md`, `docs/USAGE.md`,
+  `CONTRIBUTING.md`; LICENSE (CC BY-NC 4.0).
 
+[Unreleased]: https://github.com/Zihao-Wu06/claude-code-orchestrate/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Zihao-Wu06/claude-code-orchestrate/releases/tag/v0.1.0
