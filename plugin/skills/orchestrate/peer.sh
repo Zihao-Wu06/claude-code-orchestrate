@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # peer.sh — invoke a different-vendor engineer as a peer for the orchestrate skill.
-# Adapted from codex-peer.sh in scdenney/open-science-skills (CC BY-NC 4.0).
 #
 # Backends: codex (default; GPT-5 family via the Codex CLI). Adding a vendor =
 # writing one backend_<name>() function below and listing it in run()'s case.
