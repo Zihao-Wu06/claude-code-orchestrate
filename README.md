@@ -15,6 +15,23 @@ model-pinned executors:
 | scout | Haiku, read-only | locating code, mapping structure, summarizing state |
 | peer (Codex) | GPT-5, different vendor | fresh perspectives, disputed designs, parallel cross-checks |
 
+## Why use it?
+
+Use `orchestrate` when a coding task needs a strong lead model, but not every
+step deserves that model's full context and token budget.
+
+- Keep the lead model on the hard parts.** It owns the plan, trade-offs,
+   integration, and final judgment.
+- Move context-heavy work out of the main thread.** Reconnaissance and file
+   mapping come back as short, evidence-backed summaries.
+- Route routine work without lowering the bar.** Mechanical tasks go to
+   cheaper capable executors, but still return against explicit acceptance
+   checks.
+- Escalate only when needed.** Hard reasoning routes to Opus; disputed or
+   risky calls can get a peer path instead of one model reviewing itself.
+- Make the workflow harder to drift.** Every delegation has a contract,
+   status, and verification step before the result is used.
+
 ## Why using multi-model?
 
 `orchestrate` uses Fable 5 as the lead model, not the universal executor. The
