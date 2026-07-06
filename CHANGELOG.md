@@ -8,16 +8,6 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
-- The `custom` roster now takes **skills** as well as roles: installed
-  skills are enumerated (frontmatter only) and offered alongside agent
-  roles; a selected skill is injected per-dispatch by domain match — the
-  matching executor is told to read it first and follow it as its operating
-  procedure. The injection rides in the task body, so it reaches the peer
-  too and stays verbatim on the blind-parallel path; the tier contract
-  always wins over an injected skill, and every injection — or a selected
-  skill that matched nothing — is announced. Guarded by the new scenario D
-  (selection half RED→GREEN; the injection half already emerged from the
-  file-handoff idiom and is kept as a regression guard).
 - Live end-to-end eval v1 (`tests/evals/live/`): a nested orchestrator
   subject really spawns subagents to fix a planted bug; graded on objective
   assertions (independent red-before/green-after reproduction included).
@@ -30,7 +20,7 @@ All notable changes to this project are documented here. The format follows
 - The Codex peer is now explicitly optional: `peer.sh --off | --on | --status`
   persistent switch (marker outside the skill dir, survives updates; disabled
   runs refuse with exit 3). While off, the skill announces the skip and the
-  high-stakes path falls back to its economic-mode single-executor form.
+  high-stakes path falls back to its cheap-mode single-executor form.
 - CI now smoke-tests the manual install path on Linux **and macOS**
   (`make smoke-install`: placement, idempotence, stale-agent cleanup — the
   macOS job is the first CI coverage of peer.sh's bash-3.2/watchdog branch),
@@ -46,16 +36,8 @@ All notable changes to this project are documented here. The format follows
   review: adopted P0/P1b fully, P1a/P2a/P2b partially, deferred P1c.)
 
 ### Changed
-- README gains a dedicated **The Codex peer** section documenting the on/off
-  switch (`--status` / `--off` / `--on`, persistent marker outside the skill
-  dir) and the unreachable-auto-off degrade path — distinguishing the
-  deliberate, persistent switch (exit 3, needs `--on` to recover) from the
-  automatic, *transient* skip when the Codex CLI is absent (self-heals once
-  Codex is reachable again).
-- The `cheap` budget mode is renamed to `economic` (same semantics; the
-  0.1.0 entry below keeps the original name as a historical record).
 - The shippable plugin now lives entirely under `plugin/` (agents, commands,
-  skills, plugin manifest); the root
+  skills, plugin manifest), mirroring upstream open-science-skills; the root
   marketplace manifest points at `./plugin`. `install.sh` moved to
   `scripts/install.sh` (`make install`). Root entries: 19 → 15.
 - GitHub tree slimmed: raw eval run data is no longer committed (regenerable;
@@ -77,8 +59,9 @@ All notable changes to this project are documented here. The format follows
 - `peer.sh --help` extracts the header by marker instead of a hardcoded
   line range; `commands/orchestrate.md` no longer duplicates modifier
   semantics (SKILL.md is the single source); CI gains `workflow_dispatch`.
-- Repository structure aligned with industrial open-source conventions:
-  `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG,
+- Repository structure aligned with industrial open-source conventions
+  (referenced: anthropics/claude-plugins-official, obra/superpowers):
+  `docs/` layer (ARCHITECTURE), CONTRIBUTING, CHANGELOG, vendor PROVENANCE,
   Makefile + `scripts/bump-version.sh`, `.editorconfig`/`.gitattributes`,
   PR/issue templates with the skill-change test gate, CI converged onto
   `make check`, `tests/README.md` index.
@@ -91,10 +74,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [0.1.0] - 2026-07-05
 
-Initial release.
+Initial release: an adaptation of `fable-orchestrate` from
+[scdenney/open-science-skills](https://github.com/scdenney/open-science-skills)
+(Steven Denney, CC BY-NC 4.0), substantially extended.
 
 ### Added
-- **Skill core** (`skills/orchestrate/SKILL.md`): the core —
+- **Skill core** (`skills/orchestrate/SKILL.md`): everything upstream —
   first-match routing table, seven Opus/Sonnet mixing patterns, Codex
   use/don't-use signals, blind-parallel path, fragmentation/rubber-stamping
   guardrail — plus twelve enhancements: scout recon role (Haiku, read-only),
@@ -108,7 +93,7 @@ Initial release.
   skeleton, per-tier fill-in templates, DONE/DONE_WITH_CONCERNS/
   NEEDS_CONTEXT/BLOCKED status vocabulary wired into the ladder, file
   handoff rules, data-handoff recon exception, peer framing + verbatim
-  blind-parallel rule.
+  blind-parallel rule. Modeled on superpowers subagent-driven-development.
 - **Validation**: six TDD rounds (baseline B failure — fluency tie-break —
   flipped GREEN and held through every subsequent edit); a real end-to-end
   field run whose blind reviewer caught a latent defect the whole chain
@@ -116,6 +101,7 @@ Initial release.
   vs baseline 58.3%, `tests/evals/`); trigger tests (0 false positives).
 - **Packaging**: plugin + self-hosted marketplace manifests
   (`claude plugin validate --strict` clean), manual `install.sh`, CI
-  (shellcheck, manifest, integrity checks), LICENSE (CC BY-NC 4.0).
+  (shellcheck, manifest, integrity checks), LICENSE (CC BY-NC 4.0 with
+  upstream attribution).
 
 [0.1.0]: https://github.com/Zihao-Wu06/claude-code-orchestrate/releases/tag/v0.1.0

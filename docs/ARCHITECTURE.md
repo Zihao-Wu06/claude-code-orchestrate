@@ -13,7 +13,7 @@ tests, vendor snapshot, scripts — is engineering around it.
 
 ```
                        user
-                        │  /orchestrate [economic|thorough] [custom] <task>
+                        │  /orchestrate [cheap|thorough] [custom] <task>
                         ▼
           commands/orchestrate.md          (entry point: modifiers + tech-lead brief)
                         │ loads
@@ -62,7 +62,7 @@ Supporting pieces:
 `agents/`, `commands/` directly under it, as the official plugin spec
 requires). The repo root carries only the marketplace manifest
 (`.claude-plugin/marketplace.json`, `source: "./plugin"`) — the repo is its
-own marketplace.
+own marketplace, same layout as upstream open-science-skills.
 
 ## Load-bearing design decisions (index)
 
@@ -74,7 +74,7 @@ Each links to the section in SKILL.md that states the actual rule:
 2. **Cost & context policy** — the orchestrator's context is the scarcest
    resource; reads >~100 lines go to scout; returns are capped at 20 lines
    except data-handoff recon. (§ Cost & context policy)
-3. **Budget modes never lower thinking depth** — `economic`/`thorough` change
+3. **Budget modes never lower thinking depth** — `cheap`/`thorough` change
    *who* gets the task and how much verification runs, never how hard the
    assignee thinks; every skipped cross-check is announced. (§ Budget modes)
 4. **Status vocabulary drives the escalation ladder** — `NEEDS_CONTEXT` is
@@ -97,7 +97,10 @@ Three layers — fixtures, quantified evals, and narrative records — indexed i
 [tests/README.md](../tests/README.md), with the iron law and rerun
 procedures in [tests/RUNBOOK.md](../tests/RUNBOOK.md).
 
-## License
+## Provenance
 
-[CC BY-NC 4.0](../LICENSE) — noncommercial use, attribution required. The
-feature list is in [README.md](../README.md).
+Adapted from Steven Denney's `fable-orchestrate`
+([scdenney/open-science-skills](https://github.com/scdenney/open-science-skills),
+CC BY-NC 4.0). The pristine upstream snapshot lives in
+`vendor/fable-orchestrate/` — see its `PROVENANCE.md` for sync procedure.
+The full feature delta is in [README.md](../README.md).

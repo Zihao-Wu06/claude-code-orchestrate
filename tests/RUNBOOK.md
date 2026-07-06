@@ -1,7 +1,7 @@
 # Test RUNBOOK — orchestrate skill
 
-Regression tests for `plugin/skills/orchestrate/SKILL.md`, following a
-test-first (RED/GREEN) methodology: every scenario must FAIL without the skill
+Regression tests for `plugin/skills/orchestrate/SKILL.md`, following the superpowers
+`writing-skills` TDD methodology: every scenario must FAIL without the skill
 (baseline / RED) and PASS with it (GREEN). **Any edit to SKILL.md requires
 rerunning all three scenarios** — the iron law applies to edits, not just
 creation.
@@ -10,7 +10,7 @@ creation.
 
 `evals/` holds the structured version of these scenarios (assertions in
 `evals/evals.json`, per-case metadata under `evals/iteration-N/eval-*/`),
-built with a structured eval harness. To rerun after a skill edit:
+built with the official skill-creator harness. To rerun after a skill edit:
 
 1. Spawn the six runs (3 evals × with_skill/without_skill) as one-shot
    `general-purpose` sonnet subagents — prompts are the scenario PROMPT
@@ -27,7 +27,7 @@ built with a structured eval harness. To rerun after a skill edit:
 2. Grade each run against the assertions → `grading.json` with
    `expectations: [{text, passed, evidence}]` **and a `summary`
    {total, passed, failed, pass_rate}** (the aggregator reads summary).
-3. Aggregate + render (from the eval-harness directory):
+3. Aggregate + render (from the skill-creator directory):
    ```bash
    python3 -m scripts.aggregate_benchmark <repo>/tests/evals/iteration-N --skill-name orchestrate
    python3 eval-viewer/generate_review.py <repo>/tests/evals/iteration-N \
