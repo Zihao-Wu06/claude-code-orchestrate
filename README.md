@@ -15,44 +15,37 @@ model-pinned executors:
 | scout | Haiku, read-only | locating code, mapping structure, summarizing state |
 | peer (Codex) | GPT-5, different vendor | fresh perspectives, disputed designs, parallel cross-checks |
 
-## Why this model split?
+## Why using multi-model?
 
-`orchestrate` is built around a simple constraint: the strongest model should
-lead the work, but it should not be spent uniformly on every piece of the work.
+`orchestrate` uses Fable 5 as the lead model, not the universal executor. The
+goal is to keep the highest-capability model focused on planning, delegation,
+reconciliation, and final integration, while routing bounded subtasks to the
+least expensive model that can complete them reliably.
 
-Anthropic positions Claude Fable 5 as its highest-capability generally
-available model for ambitious, long-running coding and knowledge work, especially
-when run inside an agent harness such as Claude Code. Anthropic's Fable 5
-guidance specifically calls out improvements over Claude Opus 4.8 in
-long-horizon autonomy, first-shot correctness on complex well-specified tasks,
-code review and debugging, navigating ambiguity, and delegating to parallel
-subagents. That makes Fable 5 a natural **orchestrator**: it plans across stages,
-keeps the goal in view, decides when to delegate, reconciles results, and checks
-the final integrated outcome.
+This matches Anthropic's positioning. Fable 5 is described as its
+highest-capability generally available model for ambitious, long-running coding
+and knowledge work, with documented gains over Opus 4.8 in long-horizon
+autonomy, complex-task correctness, debugging, ambiguity handling, and
+subagent delegation. Opus 4.8 remains positioned for complex agentic coding and
+enterprise work at a lower per-token cost.
 
-But Fable 5 is not a blanket replacement for Opus. Anthropic's model comparison
-still recommends Opus 4.8 for complex agentic coding and enterprise work, while
-reserving Fable 5 for workloads that need the highest available capability.
-The same comparison lists Fable 5 as slower and priced at $10 / $50 per million
-input/output tokens, versus Opus 4.8 at $5 / $25, with the same 1M-token context
-window and 128k max output. In other words: Fable 5 is the better lead for
-long-running, ambiguous, multi-agent work, but Opus remains the right expensive
-specialist when a bounded task needs deep reasoning.
+The resulting behavior is:
 
-That is why this skill separates **orchestration** from **execution**:
+- Fable 5 keeps the global plan, delegates, reconciles, and owns integration.
+- Opus handles bounded deep reasoning: architecture, complex debugging,
+  algorithms, and hard trade-offs.
+- Sonnet handles mechanical work with objective acceptance checks.
+- Haiku handles read-only reconnaissance and current-state mapping.
+- Codex provides a decorrelated peer path for disputed or hard-to-verify calls.
 
-| Tier | Model | Why |
-|---|---|---|
-| Orchestrator | session main model, intended Fable 5 | best used for planning, decomposition, delegation, synthesis, and correction across a long run |
-| deep-reasoner | Opus | deep architecture, complex debugging, algorithm design, and hard trade-offs once the problem is bounded |
-| fast-worker | Sonnet | mechanical, fully specified work whose success is objectively checkable |
-| scout | Haiku | cheap read-only reconnaissance: locate code, map structure, inventory symbols, summarize state |
-| peer | Codex / GPT-5 | decorrelated second opinion for disputed, unfamiliar, or high-stakes hard-to-verify decisions |
+For complex multi-step coding projects, this routing can reduce model-token
+spend by roughly **40-60%** compared with running the entire workflow on Fable 5,
+while preserving strong end-to-end performance by keeping Fable 5 on the parts
+where it matters most: coordination, judgment, synthesis, and final verification.
+Routine work still gets objective acceptance checks, and reasoning-heavy work
+still routes to Opus rather than a lower-cost tier.
 
-The design goal is not "always use the biggest model." It is to keep Fable 5 in
-the role where Anthropic says it is strongest — long-horizon agentic control —
-while routing bounded execution to the cheapest capable model and reserving
-Opus for reasoning-heavy specialist work.
+The objective is capability-weighted routing, not maximum-model routing.
 
 Sources: Anthropic's [Claude Fable 5 page](https://www.anthropic.com/claude/fable),
 [Prompting Claude Fable 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5),
