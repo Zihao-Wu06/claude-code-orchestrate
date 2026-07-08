@@ -45,6 +45,28 @@ that actually need them (e.g. `frontend.skill`, `backend.skill`, `design.skill`,
 3. **No context flooding:** the lead model only decides which skill fits; the
    assigned subagent reads the full skill instructions when it starts that task.
 
+### How it compares
+
+`orchestrate` is a routing discipline, not an autonomous framework. For
+contrast, here is where it sits next to the "orchestration framework"
+category — multi-mode suites with a TS runtime, lifecycle hooks, and keyword
+triggers, of which [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)
+is the best-known example:
+
+| Dimension | This plugin | Orchestration framework (e.g. oh-my-claudecode) |
+|---|---|---|
+| Footprint | 1 skill + 3 agents + 1 script | ~40 skills / 19 agents / 13 hook events |
+| Where behavior lives | prompt architecture (`SKILL.md` rules) | TS runtime + hook scripts |
+| Model strategy | pinned tiers + cross-vendor blind parallel | tier presets |
+| Activation | explicit `/orchestrate`, or native description trigger | keyword hooks |
+| State | stateless + a per-run ledger file | persistent state dir + MCP |
+| Validation | published RED/GREEN scenario ablation | vitest/CI of the runtime |
+
+Both are legitimate design choices for different goals — this table is a
+factual contrast, not a ranking. Choose a framework if you want an
+all-in-one autonomous suite; choose this if you want one auditable routing
+discipline.
+
 ## Why using Multi-Model?
 
 `orchestrate` uses Fable 5 as the lead model, not the universal executor. The
@@ -68,12 +90,18 @@ The resulting behavior is:
 - Haiku handles read-only reconnaissance and current-state mapping.
 - Codex provides a decorrelated peer path for disputed or hard-to-verify calls.
 
-For complex multi-step coding projects, this routing can reduce model-token
-spend by roughly **40-60%** compared with running the entire workflow on Fable 5,
-while preserving strong end-to-end performance by keeping Fable 5 on the parts
-where it matters most: coordination, judgment, synthesis, and final verification.
-Routine work still gets objective acceptance checks, and reasoning-heavy work
-still routes to Opus rather than a lower-cost tier.
+For complex multi-step coding projects, routing bulk work off the lead model
+is *expected* to reduce model-token spend substantially — a **design-intent
+estimate of roughly 40-60%** versus running the entire workflow on Fable 5,
+not yet benchmarked; a controlled long-task token-spend benchmark is future
+work. What *is* measured, from [`tests/evals/iteration-1/`](tests/evals/iteration-1/),
+is routing-decision compliance: the controlled ablation below found **100%
+vs. 58.3%** pass rate for with-skill vs. baseline routing decisions (see
+[§4.1](#41-controlled-ablation-baseline-vs-with-skill)). Preserving strong
+end-to-end performance means keeping Fable 5 on the parts where it matters
+most: coordination, judgment, synthesis, and final verification. Routine work
+still gets objective acceptance checks, and reasoning-heavy work still routes
+to Opus rather than a lower-cost tier.
 
 The objective is capability-weighted routing, not maximum-model routing.
 
@@ -85,10 +113,12 @@ and [Models overview](https://platform.claude.com/docs/en/about-claude/models/ov
 
 - [Why use it?](#why-use-it)
 - [What makes it Special?](#what-makes-it-special)
+  - [How it compares](#how-it-compares)
 - [Why using Multi-Model?](#why-using-multi-model)
 - [Install](#install)
 - [Usage](#usage)
   - [Quick start](#quick-start)
+  - [First successful run](#first-successful-run)
   - [The `/orchestrate` command](#the-orchestrate-command)
   - [Modifiers](#modifiers)
   - [Budget modes](#budget-modes)
@@ -151,6 +181,40 @@ The orchestrator **shows its plan first** — the decomposition and the tier
 each piece routes to — then executes: scout maps the module → deep-reasoner
 root-causes → fast-worker implements with a regression test → the build and a
 blind reviewer verify. You read concise conclusions, never file dumps.
+
+### First successful run
+
+Three copy-paste examples, each exercising a different routing path.
+
+**1. Routine bug fix** — plan-first, then scout → fix → verification:
+
+```
+/orchestrate Fix the off-by-one in parseRange() in src/utils/range.ts and
+add a regression test.
+```
+What you'll see: the plan routes scout (inventory the function) →
+fast-worker (fix + test); the cheap check runs the tests, no reviewer needed.
+
+**2. Design-only consult** — deep-reasoner routing, or the blind parallel
+path on a high-stakes framing:
+
+```
+/orchestrate What's the right way to add idempotency keys to our webhook
+delivery endpoint?
+```
+What you'll see: deep-reasoner takes the design question directly (row 6).
+Reframed as high-stakes ("...for the payments webhook, ship it today"), the
+same question instead fires the blind Opus+Codex parallel path.
+
+**3. High-stakes change** — the ambiguity gate, then tiered verification:
+
+```
+/orchestrate Add password-reset tokens to the auth service.
+```
+What you'll see: the ambiguity gate asks ≤3 targeted questions (token TTL?
+single-use enforcement? which mailer?) *before* any dispatch. After
+implementation, the security/auth risk domain forces a blind Opus reviewer
+even though the tests are green.
 
 ### The `/orchestrate` command
 
@@ -350,6 +414,30 @@ On top of that:
     orchestrator never reads the body, and every injection is announced. The
     routing table itself never changes. `agent-TEMPLATE.md` is the authoring
     guide for roles.
+13. **Stage ledger** — a run with ≥2 dependent stages or any background
+    fan-out outlives the orchestrator's own context: after each stage a
+    scratch, never-committed ledger file (Decided · Rejected · Risks · Files
+    touched · Remaining, ≤20 lines) is written or updated and re-read at
+    every fan-in, after compaction, and before resuming. [SKILL.md § Stage
+    ledger](plugin/skills/orchestrate/SKILL.md#stage-ledger--the-runs-own-memory).
+14. **Ambiguity gate** — before any high-stakes fan-out (or any implement
+    dispatch that would otherwise go out without an objective acceptance
+    check), every unknown is triaged: user-resolvable facts get ≤3 targeted
+    questions in one round (never guessed, never delegated to a reasoning
+    model that can't know them), repo-resolvable facts go to scout, genuine
+    design unknowns route to deep-reasoner. Fires in every budget mode,
+    `economic` included. [SKILL.md § Ambiguity
+    gate](plugin/skills/orchestrate/SKILL.md#ambiguity-gate--before-any-designimplementation-fan-out).
+15. **Tiered verification** — reviewer tier follows change surface × risk
+    domain: a cheap check with no risk-domain touch needs no reviewer by
+    default; a large diff (≈>20 files) or any risk-domain touch always gets
+    a blind Opus reviewer with a security/correctness focus, even when tests
+    are green, because passing tests only prove what the test-writer thought
+    of. Every reviewer returns a defect list plus an answer to "is there a
+    simpler or safer approach?", scoped to the changed code and its
+    callers/callees — never an approve/reject verdict. [SKILL.md §
+    Verification
+    stage](plugin/skills/orchestrate/SKILL.md#verification-stage--after-every-implement-type-delegation).
 
 ## Design and evaluation
 
@@ -550,10 +638,13 @@ scripts/ + Makefile      installer + maintenance tooling — `make check` is the
 ## Documentation
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how the pieces fit; the
-  seven load-bearing design decisions, each linked to its SKILL.md section
+  ten load-bearing design decisions, each linked to its SKILL.md section
 - [docs/USAGE.md](docs/USAGE.md) — the full usage reference: every
   `/orchestrate` modifier and its effect, the routing tiers, output shapes,
   the `peer.sh` CLI, `make` targets, and troubleshooting
+- [docs/ROSTER.md](docs/ROSTER.md) — the operator-facing matrix: the default
+  roster and when *not* to use each executor, the verification-tier table,
+  and the custom-roster admission rules
 - [tests/README.md](tests/README.md) — the three test layers and how to run
   them; [tests/RUNBOOK.md](tests/RUNBOOK.md) — rerun procedures and the iron
   law (no skill edit ships without a scenario rerun)

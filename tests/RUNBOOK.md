@@ -24,6 +24,14 @@ built with a structured eval harness. To rerun after a skill edit:
    **Baseline caveat (learned the hard way):** if the skill is installed in
    `~/.claude/skills/`, park it elsewhere for the baseline runs — installed
    skills auto-trigger and contaminate the without_skill arm.
+   Two more contamination paths surfaced this round. First, a subject with
+   `cwd` inside this repo self-discovers `SKILL.md` unprompted — guard with
+   the neutral line *"Answer from this prompt alone: do not read any files
+   or run any commands before answering."* Second, the harness still
+   injects this repo's `CLAUDE.md` (a routing quick-reference) into every
+   subagent in this `cwd`; a zero-knowledge baseline needs one outside the
+   repo. In-repo guarded baselines stay valid only for elements `CLAUDE.md`
+   lacks (annotate which). With-skill arms are unaffected by either path.
 2. Grade each run against the assertions → `grading.json` with
    `expectations: [{text, passed, evidence}]` **and a `summary`
    {total, passed, failed, pass_rate}** (the aggregator reads summary).

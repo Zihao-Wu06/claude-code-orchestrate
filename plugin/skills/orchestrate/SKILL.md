@@ -70,6 +70,8 @@ The invocation may start with modifiers, in any order, before the task:
 
 **The high-stakes parallel path (row 3) fires only when BOTH conditions hold** — high blast radius AND hard to verify. If it is high-stakes but *cheaply verifiable* (a test, a diff that applies, a ground truth to check), use one executor plus a verification step; the parallel cross-check only earns its cost when you *cannot* verify, because then a second independent line of reasoning is the only defense against a confident single-model error.
 
+**Row 6's "ambiguous spec" means DESIGN ambiguity** — a genuine design unknown, routed to a reasoning model. A **user-resolvable fact** (which IdP, which vendor, which rollout policy) is never delegated to Opus — Opus cannot know which identity provider the company uses; those go through the **ambiguity gate** below.
+
 ### Cost & context policy
 
 Your context is the scarcest resource in the loop. Rules, not vibes:
@@ -79,6 +81,22 @@ Your context is the scarcest resource in the loop. Rules, not vibes:
 - **Return contract on every delegation: conclusion + evidence, ≤ 20 lines,** anchored as `path:line` where applicable. Reject dumps; re-ask with the contract restated. One exception, keyed to a predicate: a recon inventory that feeds another executor (a data handoff) returns in full — see the recon template in dispatch-prompt.md — and you relay it without re-reading it.
 - **Slow work goes to the background** (`run_in_background: true`); keep planning, consume the final message on notification. Never read a subagent's transcript file — the final message IS the return value.
 - **Hand bulk over as files, not pasted text.** Inputs over ~20 lines enter a dispatch as a file path ("Read this first — it is your requirements"); implement-type executors write their full report to a file and return status + summary + path. Everything you paste into a dispatch stays resident in your context for the rest of the session.
+
+### Stage ledger — the run's own memory
+
+A run with **≥2 dependent stages** (design → fan-out → integrate) or **any background fan-out** outlives your context window. **After each stage, write or update one run-ledger file** — a scratch/temp path, never committed, ≤20 lines: **Decided · Rejected (and why) · Risks · Files touched · Remaining.** **Re-read it at every fan-in, after any context compaction, and before resuming an interrupted run.**
+
+The ledger is **your own run state — one file per run** — not an executor report and not the frozen interface/design contract. That contract is a *design artifact* (what to build, frozen before fan-out); the ledger is *run state* (what you decided and rejected, where the run stands). Conversation history does not survive compaction, and neither a contract file nor an executor's report records the run's own decisions — so without the ledger a compacted or resumed run silently loses them.
+
+### Ambiguity gate — before any design/implementation fan-out
+
+**Fires when** the task hits **row 3 (high-stakes)**, or an implement-type dispatch would otherwise go out **without an objective acceptance check.** Triage every unknown *before* dispatching:
+
+- **User-resolvable** (business intent, product/vendor choice, risk appetite, rollout/rollback policy) → **ask the user**: ≤3 targeted questions, **one round** — AskUserQuestion when available, plain text otherwise.
+- **Repo-resolvable** (current state, constraints living in the code) → **scout**.
+- **Genuine design unknown** → route per the table (row 6).
+
+**Hard rule: never fan out design or implementation on a guessed user-resolvable fact on high-stakes work** — and never delegate that fact to a reasoning model, which cannot know it (Opus does not know the company's IdP). Trivial/reversible work keeps the default: state the assumption and proceed. After the one round, proceed with stated assumptions for whatever stays open **except high-stakes irreversibles**, which wait or escalate. **The gate applies in every budget mode, economic included** — questions are free; wrong high-stakes execution is the most expensive failure of all.
 
 ### Delegate with a contract
 
@@ -123,11 +141,13 @@ Binding rules that hold across every mixed pattern:
 
 ### Verification stage — after every implement-type delegation
 
-A returned "done" is a claim, not a fact. On fan-in:
+A returned "done" is a claim, not a fact. **Calibrate the check by change surface × risk domain** — *risk domain* = the high-blast-radius list above (security/auth, data-loss, concurrency, crypto, public API). On fan-in:
 
-1. **Cheaply verifiable** (tests exist, build compiles, diff applies)? Run the check yourself. This is integration ownership; it is never delegated away.
-2. **Not cheaply verifiable?** Spawn a **fresh reviewer that has not seen the implementation conversation** — give it only the diff and the contract's acceptance criteria. Demand a **defect list** (`path:line` + why it's wrong), not an approve/reject verdict; a reviewer allowed to say "LGTM" will say it.
-3. You adjudicate the defect list; fixes route by the routing rule (mechanical fix → fast-worker; design flaw → deep-reasoner).
+1. **Cheaply verifiable** (tests exist, build compiles, diff applies) **and no risk-domain touch, below the step-3 size line**? Run the check yourself; **no reviewer by default.** This is integration ownership; it is never delegated away.
+2. **Not cheaply verifiable** (and below the step-3 line) → spawn a **blind reviewer that has not seen the implementation conversation** (Sonnet tier default) — give it only the diff and the contract's acceptance criteria.
+3. **Large (≈>20 files) OR any risk-domain touch** → **blind reviewer at the Opus tier with an explicit security/correctness focus — even when tests pass.** Passing tests never waive it: they prove only what the test-writer thought of, and are partly self-graded when the implementer shaped the tests.
+
+Every reviewer dispatch (template in [dispatch-prompt.md](dispatch-prompt.md)) scopes the review to **the changed code plus its callers and callees** and demands a **defect list** (`path:line` + why it's wrong) **and** an answer to *is there a meaningfully simpler or safer approach?* — never an approve/reject verdict; a clean pass enumerates the properties/attack classes it checked. On a risk-domain diff the **default-mode floor is one blind Opus reviewer** (security-focused), not two — a second, adversarial Codex reviewer is thorough mode's falsify pass, or fires on an explicit Codex signal (unverifiable check, disputed expensive-to-undo design), never by default. You adjudicate the defect list; fixes route by the routing rule (mechanical fix → fast-worker; design flaw → deep-reasoner).
 
 ### Consult the peer (peer.sh)
 
@@ -178,7 +198,7 @@ Modes adjust **routing tendency** and **verification intensity**. They never sil
 | Row-3 parallel cross-check | **Disabled.** On a dual-condition hit: deep-reasoner solo + independent Sonnet review, and announce *"economic mode skipped the cross-vendor check — human sign-off recommended"* | Fires on the dual condition | Fires on the dual condition; reconcile rounds 1 → 2 before escalating |
 | Borderline task (reasoning vs mechanical unclear) | **Route down:** fast-worker first, with the acceptance check; ladder up on failure | Judgment call per the table | **Route up:** deep-reasoner directly |
 | Codex signals | Only "you are looping"; on other signals announce *"cross-check available, skipped (economic)"* | All seven | All seven, plus an adversarial falsify pass on high-stakes conclusions |
-| Verification stage | **Never cut**; reviewer pinned to Sonnet | Cheap check → run it; else reviewer | Implement-type always gets a reviewer (tests AND reviewer) |
+| Verification stage | **Never cut**; reviewer pinned to Sonnet — on a **risk-domain diff** announce *"economic mode used a Sonnet reviewer on a risk-domain diff — Opus review recommended"* | Cheap check → run it; else reviewer, calibrated by surface × risk | Implement-type always gets a reviewer (tests AND reviewer); **risk-domain → Opus** |
 | Thinking depth | Claude executors unchanged; peer calls use `--effort medium` | Full; peer at its default (xhigh) | Full; peer at xhigh |
 | scout / trivial-solo rows | unchanged | unchanged | unchanged |
 

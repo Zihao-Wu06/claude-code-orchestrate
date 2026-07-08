@@ -7,6 +7,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-09
+
+Three new orchestration behaviors, each landed test-first (scenario written
+and failed RED before the rule existed, then 7/7 GREEN — Round 13 in
+`tests/records/results.md`), plus adoption-focused docs.
+
+### Added
+- Stage ledger for multi-stage runs (SKILL.md Run section).
+- Ambiguity gate: user-resolvable unknowns on high-stakes work are asked
+  (≤3 questions, one round), never guessed or delegated; row-6
+  design-ambiguity clarifier.
+- Tiered verification: reviewer tier follows change surface × risk domain;
+  green tests never waive blind review on risk-domain diffs; new
+  blind-reviewer dispatch template (defect list + optimality question +
+  callers/callees scope).
+- Scenarios E/F/G + eval cases; RUNBOOK baseline guard against in-repo
+  self-discovery contamination.
+- docs: ROSTER.md, README first-run examples + comparison subsection,
+  measured-vs-estimated cost-claim split.
+
 ## [0.1.0] - 2026-07-06
 
 Initial public release.
@@ -54,5 +74,6 @@ Initial public release.
   writeup in the README, `docs/ARCHITECTURE.md`, `docs/USAGE.md`,
   `CONTRIBUTING.md`; LICENSE (CC BY-NC 4.0).
 
-[Unreleased]: https://github.com/Zihao-Wu06/claude-code-orchestrate/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Zihao-Wu06/claude-code-orchestrate/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Zihao-Wu06/claude-code-orchestrate/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Zihao-Wu06/claude-code-orchestrate/releases/tag/v0.1.0

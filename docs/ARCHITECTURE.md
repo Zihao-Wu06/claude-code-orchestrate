@@ -90,6 +90,20 @@ Each links to the section in SKILL.md that states the actual rule:
    carry their operating contract; the `general-purpose` fallback path and
    the peer must receive a role preamble in the dispatch itself.
    (dispatch-prompt.md § Skeleton)
+8. **Ledger: run state must survive compaction without a state system** — a
+   run with ≥2 dependent stages or any background fan-out outlives the
+   context window; a per-run ledger file (Decided · Rejected · Risks · Files
+   touched · Remaining) is re-read at every fan-in, after compaction, and on
+   resume. (§ Stage ledger)
+9. **Gate: user-resolvable facts route to the user, not to a bigger model**
+   — every unknown is triaged before high-stakes fan-out: user-resolvable
+   facts get ≤3 questions in one round, repo-resolvable facts go to scout,
+   only a genuine design unknown reaches deep-reasoner. (§ Ambiguity gate)
+10. **Tiered verification: verification spend follows blast radius, tests
+    never self-certify risk domains** — reviewer tier is calibrated by
+    change surface × risk domain; a risk-domain diff always gets a blind
+    Opus reviewer with a security/correctness focus, even when tests pass.
+    (§ Verification stage)
 
 ## Testing
 

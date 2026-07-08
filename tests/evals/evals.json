@@ -39,6 +39,47 @@
         {"text": "The dispatch prompt includes an explicit acceptance check and a return format (contract fields present)"},
         {"text": "Architecture/boundary design is explicitly reserved for a reasoning-tier executor (deep-reasoner/Opus), not the mechanical worker and not decided by the orchestrator before recon returns"}
       ]
+    },
+    {
+      "id": 3,
+      "eval_name": "stage-ledger-handoff",
+      "prompt_file": "../scenarios/E-stage-ledger.md",
+      "expected_output": "Plans the full staged migration but writes a short handoff/ledger note to a file between stages (decisions made, alternatives rejected, risks, files touched, remaining work) and re-reads it at fan-in and before resuming after interruption; coordination state is not carried in conversation alone.",
+      "files": [],
+      "assertions": [
+        {"text": "Plan writes a short (roughly <=20-line) handoff/ledger note to a file between stages, before moving on to the next stage"},
+        {"text": "The ledger note captures decisions made, alternatives rejected, risks, files touched, and remaining work"},
+        {"text": "The plan re-reads the ledger note at fan-in (when the parallel conversion batches rejoin) and/or explicitly before resuming after an interruption or compaction"},
+        {"text": "No stage transition relies on conversation memory alone to carry cross-stage state — a file is the persistence mechanism"}
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "ambiguity-gate-intake",
+      "prompt_file": "../scenarios/F-ambiguous-intake.md",
+      "expected_output": "Before dispatching any design or implementation work, asks the user a small set (three or fewer) of targeted questions about the user-resolvable unknowns (IdP/protocol, treatment of existing password users, rollout/rollback constraints); does not guess the requirements or hand the ambiguity to deep-reasoner/Codex; may run a scout in parallel for repo-resolvable facts.",
+      "files": [],
+      "assertions": [
+        {"text": "Before any design or implementation dispatch, the plan asks the user targeted questions rather than proceeding on assumptions"},
+        {"text": "The number of questions asked is small and bounded (three or fewer)"},
+        {"text": "The questions target genuinely user-resolvable unknowns such as IdP/protocol choice, treatment of existing password users, and rollout/rollback constraints"},
+        {"text": "The plan does not delegate resolving these unknowns to deep-reasoner, Codex, or any other executor"},
+        {"text": "No implementation or architecture fan-out happens before the user answers (a parallel scout dispatch for repo-resolvable facts is acceptable)"}
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "verification-tier-calibration",
+      "prompt_file": "../scenarios/G-verify-calibration.md",
+      "expected_output": "Treats the two diffs differently: runs a cheap self-check (tests/build/diff scan) for the config rename with no reviewer spawn; spawns a blind Opus-tier reviewer with a security focus for the auth overhaul despite passing tests, scoped to callers/callees, asked for a path:line defect list (not approve/reject) plus whether a meaningfully simpler approach exists.",
+      "files": [],
+      "assertions": [
+        {"text": "For the config-rename result, the plan runs only a cheap self-check (tests/build/diff scan) and does not spawn a reviewer"},
+        {"text": "For the auth-overhaul result, the plan spawns a blind reviewer despite the report that tests pass"},
+        {"text": "The auth-overhaul reviewer is pinned to the Opus tier and given an explicit security focus"},
+        {"text": "The auth-overhaul reviewer is asked to return a path:line defect list, not an approve/reject verdict"},
+        {"text": "The auth-overhaul reviewer's scope includes callers/callees of the changed code and/or is asked whether a meaningfully simpler approach exists"}
+      ]
     }
   ]
 }

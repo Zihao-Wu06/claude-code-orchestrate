@@ -239,3 +239,69 @@ interpretation — including the same-day real-environment auto-trigger that
 contaminated, and thereby validated, the baseline arm). Full artifacts:
 benchmark.md and ANALYSIS.md under tests/evals/iteration-1/ (the browsable
 review.html viewer is generated, not committed — see tests/RUNBOOK.md).
+
+## Round 13 — stage ledger + ambiguity gate + tiered verification, 2026-07-09
+
+Edits under test (three rules, one round): **Stage ledger** (Run section —
+≥2 dependent stages or background fan-out → one run-ledger file, Decided ·
+Rejected · Risks · Files touched · Remaining, re-read at fan-in/compaction/
+resume); **Ambiguity gate** (row-3 or acceptance-check-less dispatch →
+triage unknowns: user-resolvable → ≤3 questions one round, repo-resolvable
+→ scout, design → the table; row-6 clarifier: "ambiguous spec" = design
+ambiguity only); **Tiered verification** (surface × risk domain calibration;
+green tests never waive blind review on a risk-domain diff; blind-reviewer
+template with callers/callees scope + the simpler-approach question;
+default floor on risk-domain = ONE Opus reviewer, Codex second = thorough/
+signal). New scenarios E/F/G written BEFORE the rules (TDD).
+
+RED story (three arms each: no-skill guarded, old-skill, plus 3 discarded
+first-attempt baselines):
+
+- **Baseline validity, two new contamination paths** (now in RUNBOOK):
+  (1) unguarded subjects with cwd inside this repo self-discovered and read
+  SKILL.md — all 3 first-attempt baselines discarded (kept as extra
+  old-skill-flavored data points); (2) even guarded (no reads, 0 tool
+  calls), the harness injects the repo's CLAUDE.md routing quick-reference
+  into subagents — guarded baselines stay valid ONLY for elements absent
+  from CLAUDE.md, which E/F/G's tested elements are.
+- **E — stage ledger:** no-skill FAIL, old-skill FAIL. Both arms wrote a
+  frozen design/interface contract file but zero inter-stage run state — no
+  Rejected/Risks/Remaining notes, no fan-in re-read, no compaction
+  awareness. The design-artifact-vs-run-state distinction is fully
+  load-bearing.
+- **F — ambiguity gate:** no-skill FAIL (narrow), old-skill FAIL (narrow).
+  Honest annotation: the *gate itself emerged in every arm* on this blatant
+  case (SSO, zero facts) — old-skill derived it by colliding "unspecified
+  decisions route up" with row-1 ownership and stopped to ask. What never
+  emerged: the ≤3/one-round bound (arms asked 4-6 question areas) and rule
+  reliability without first-principles derivation. F's measured delta is
+  bounding + explicitness; a subtler-ambiguity scenario is future work.
+- **G — tiered verification:** no-skill FAIL, old-skill FAIL. Both arms
+  tiered correctly (rename self-checked; auth diff blind-reviewed despite
+  green tests — emergent from the blast-radius list) and both independently
+  invented an Opus+Codex DOUBLE review. The two elements that never
+  appeared in any arm: callers/callees review scope and the
+  simpler-approach (optimality) question — exactly the new template's
+  content. The double-review ambiguity was settled in the rule text
+  (default floor = one Opus reviewer; Codex second = thorough's falsify
+  pass or an explicit signal).
+
+GREEN (post-edit, all seven in parallel, fresh Sonnet subjects reading
+SKILL.md + dispatch-prompt.md):
+
+| Scenario | Verdict |
+|---|---|
+| A — trivial | **PASS** (row-2 solo; explicitly reasons gate/ledger/reviewer all correctly DON'T fire) |
+| B — conflict | **PASS** (four-part brief, no fifth part; crux variables framed as user-resolvable facts per the gate) |
+| C — recon | **PASS** (scout-first data-handoff; gate's ≤3 questions fired in parallel; ledger opened at the multi-stage threshold) |
+| D — skill selection + injection | **PASS 6/6** (frontmatter-only enumeration via scout; injection into both blind-parallel audit dispatches, none into the rename) |
+| E — stage ledger | **PASS** (ledger initialized before fan-out, updated at every fan-in, "distinct from the interface contract", ≤20 lines, compaction rationale cited) |
+| F — ambiguity gate | **PASS** (exactly 3 targeted questions, one round, design fan-out gated on answers; notes "end to end" does not override the gate) |
+| G — verify calibration | **PASS** (rename: case-1 self-check, no reviewer; auth diff: Opus blind reviewer despite green tests, callers/callees scope, defect list + simpler-approach answer, single-reviewer default with signal-gated Codex) |
+
+**Outcome: E/F/G RED→GREEN; A-D hold — 7/7 PASS.** One defect caught in
+review before GREEN: the rewritten verification enumeration had a coverage
+hole (mid-size + cheaply-verifiable + no-risk matched no step); fixed by
+restoring "cheaply verifiable → run it yourself" as step 1's head condition
+below the step-3 line. Grader = coordinator (not blind), 1 rep per arm —
+same caveats as prior rounds.
