@@ -60,6 +60,71 @@ Modifiers go before the task, in any order, and combine
 gets the work and how much verification runs, never the assignee's reasoning
 depth. The only depth knob is the peer's `--effort`, which `economic` lowers.
 
+### Stage ledger
+
+A run with **≥2 dependent stages** (design → fan-out → integrate) or **any
+background fan-out** outlives the orchestrator's own context window. After
+each stage, the orchestrator writes or updates one **run-ledger file** — a
+scratch/temp path, never committed, capped at ~20 lines: **Decided ·
+Rejected (and why) · Risks · Files touched · Remaining**. It re-reads that
+file at every fan-in, after any context compaction, and before resuming an
+interrupted run.
+
+The ledger is the run's own state, one file per run — it is not an
+executor's report and not the frozen design contract (what to build, agreed
+before fan-out). Without it, a compacted or resumed run has no other way to
+recover its own prior decisions.
+
+### Ambiguity gate
+
+Fires before any design/implementation fan-out on a high-stakes task
+(routing row 3), or whenever an implement-type dispatch would otherwise go
+out without an objective acceptance check. Every unknown is triaged first: a
+**user-resolvable** fact (business intent, vendor choice, risk appetite,
+rollout policy) is asked to you directly — never guessed, never delegated to
+a reasoning model that cannot know it; a **repo-resolvable** fact goes to
+scout; a **genuine design unknown** routes to deep-reasoner (row 6).
+
+Worked exchange:
+
+```
+You:          /orchestrate Add SSO login to the admin panel.
+Orchestrator: This is high-stakes (auth). Before I dispatch anything:
+              1. Which identity provider — Okta, Azure AD, something else?
+              2. Does password login keep working, or is SSO the only path?
+              3. Any rollback requirement if the rollout fails partway?
+You:          Okta, keep password login as a fallback, no special rollback.
+Orchestrator: [dispatches scout on the current auth module, then
+              deep-reasoner on the integration design, against those answers]
+```
+
+At most 3 targeted questions, one round. After that round, anything still
+open proceeds on a stated assumption — except a high-stakes irreversible,
+which waits or escalates instead. The gate applies in every budget mode,
+`economic` included: questions are free, a wrong high-stakes execution is
+not.
+
+### Verification tiers
+
+Reviewer tier is calibrated by **change surface × risk domain** (risk domain
+= security/auth, data-loss, concurrency, crypto, public API — the
+high-blast-radius list). Passing tests never waive review on a risk-domain
+diff: they prove only what the test-writer thought of, and are partly
+self-graded when the implementer shaped the tests.
+
+| Change surface × risk domain | Reviewer |
+|---|---|
+| Cheaply verifiable (tests/build/diff), no risk-domain touch, below the size line | none by default — the orchestrator runs the check itself |
+| Not cheaply verifiable, no risk-domain touch, below the size line | blind reviewer, Sonnet tier — diff + acceptance criteria only |
+| Large (≈>20 files), **or** any risk-domain touch | blind reviewer, **Opus tier, security/correctness focus** — even with green tests |
+
+Every reviewer dispatch is blind to the implementation conversation, scoped
+to the changed code **plus its callers and callees**, and must return a
+**defect list** (`path:line` + why it's wrong) **and** an explicit answer to
+*is there a meaningfully simpler or safer approach?* — never an
+approve/reject verdict; a clean pass still enumerates the properties or
+attack classes it checked.
+
 ### Worked examples
 
 **Bug fix + extraction, default mode:**
@@ -84,7 +149,13 @@ structlog. Design the shared schema first; nothing moves until it's frozen.
 
 Expected: schema design lands on deep-reasoner with a Codex falsify pass;
 mechanical per-service edits fan out to parallel fast-workers in worktrees; you
-get build+test results, not "done" claims.
+get build+test results, not "done" claims. This run has ≥2 dependent stages
+(design → fan-out → integrate) plus background fan-out, so the orchestrator
+writes a stage-ledger file once the schema stage lands — *Decided:* schema
+frozen; *Risks:* two services use a custom formatter; *Files touched:*
+`schema.md`; *Remaining:* 40 services — and re-reads it at every fan-in, so
+the run's own decisions survive even if your session compacts partway
+through the 40 services.
 
 **Quick sweep, thrift mode:**
 

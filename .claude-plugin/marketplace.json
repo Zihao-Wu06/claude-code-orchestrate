@@ -10,7 +10,7 @@
     {
       "name": "orchestrate",
       "description": "Multi-model orchestration: routing table (scout recon, mechanical, reasoning, cross-vendor peer tiers), six-field delegation contracts with dispatch templates, DONE/BLOCKED status vocabulary, budget modes (economic/thorough), escalation ladder, blind-parallel high-stakes path with reconcile rules, and a verification stage. Installs the /orchestrate command and three model-pinned agents (deep-reasoner→Opus, fast-worker→Sonnet, scout→Haiku). Codex peer requires the Codex CLI (degrades gracefully without it).",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "license": "CC-BY-NC-4.0",
       "author": {
         "name": "Zihao Wu",

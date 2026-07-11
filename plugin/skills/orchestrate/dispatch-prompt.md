@@ -131,6 +131,31 @@ Return: conclusion first, then the load-bearing reasons, then what would
 make you wrong. Conclusion + evidence, ≤20 lines.
 ```
 
+## Template — blind reviewer (verification gate)
+
+For the Verification-stage reviewer. **Fresh context — never the
+implementer's conversation.** Pick the model tier by the calibration in
+SKILL.md: Sonnet for a mid-size diff; **Opus, security focus, for a large or
+any risk-domain diff** (and even when tests pass). On the Codex/fallback
+path, prepend the peer preamble.
+
+```
+Context: blind review of a change you did not write; you have not seen the
+         implementation conversation.
+
+Goal:             Find defects and judge the approach of the change in <diff>.
+Inputs:           The diff: <path>. The original contract's acceptance
+                  criteria ONLY — nothing else from the build conversation.
+Constraints:      Review the changed code PLUS its callers and callees.
+                  [risk-domain:] explicit security/correctness focus.
+Acceptance check: n/a — you are the check.
+Return format:    Status first, then a DEFECT LIST — each item `path:line`
+                  + why it is wrong — AND an explicit answer to: is there a
+                  meaningfully simpler or safer approach? No approve/reject
+                  verdict. A clean pass must still enumerate the specific
+                  properties / attack classes you checked — not "LGTM".
+```
+
 ## Worked example — mechanical tier, fallback path, filled
 
 ```
